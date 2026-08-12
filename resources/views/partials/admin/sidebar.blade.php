@@ -34,10 +34,48 @@
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
           Dashboard
         </a>
-        <a href="{{route('akun.index')}}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-paper/70 hover:bg-white/5 hover:text-paper text-sm font-medium transition-colors">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
-          Akun
-        </a>
+        <!-- Parent: Akun (dropdown trigger) -->
+     <button
+  type="button"
+  onclick="document.getElementById('submenuAkun').classList.toggle('hidden'); document.getElementById('chevronAkun').classList.toggle('rotate-180')"
+  class="w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg text-paper/70 hover:bg-white/5 hover:text-paper text-sm font-medium transition-colors"
+>
+  <span class="flex items-center gap-3">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+      <path d="M4 19.5A2.5 2.5 0 016.5 17H20"/>
+      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/>
+    </svg>
+    Akun
+  </span>
+  <svg
+    id="chevronAkun"
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    class="transition-transform duration-200"
+  >
+    <path d="M6 9l6 6 6-6"/>
+  </svg>
+</button>
+
+<!-- Submenu: Akun Dosen & Akun Mahasiswa -->
+<div id="submenuAkun" class="hidden pl-9 mt-1 flex flex-col gap-1">
+  
+   <a href="{{ route('akun_dosen.index') }}"
+    class="px-3 py-2 rounded-lg text-paper/60 hover:bg-white/5 hover:text-paper text-sm transition-colors"
+  >
+    Dosen
+  </a>
+  
+  <a  href="#"
+    class="px-3 py-2 rounded-lg text-paper/60 hover:bg-white/5 hover:text-paper text-sm transition-colors"
+  >
+    Mahasiswa
+  </a>
+</div>
         <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-paper/70 hover:bg-white/5 hover:text-paper text-sm font-medium transition-colors">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
           Tugas & Kuis

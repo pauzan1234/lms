@@ -42,5 +42,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::get('/akun', [AccountController::class, 'index'])->name('akun.index');
+Route::get('/akun_dosen', [AccountController::class, 'index'])->name('akun_dosen.index');
+
+Route::get('/akun/dosen/import',[AccountController::class,'import_dosen'])->name('dosen.import');
+
+
 require __DIR__.'/auth.php';

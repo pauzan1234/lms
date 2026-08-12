@@ -58,10 +58,7 @@
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
       </button>
 
-      <div class="relative hidden sm:block w-full max-w-xs">
-        <svg class="absolute left-3 top-1/2 -translate-y-1/2 text-ink/30" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/></svg>
-        <input type="text" placeholder="Cari mata kuliah..." class="w-full pl-9 pr-3 py-2.5 rounded-lg bg-paper border border-line text-sm focus:outline-none focus:ring-2 focus:ring-teal/30 focus:border-teal">
-      </div>
+    
 
       <div class="ml-auto flex items-center gap-4">
         <button class="relative text-ink/50 hover:text-ink">
