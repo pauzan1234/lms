@@ -13,4 +13,12 @@ class AccountController extends Controller
     public function import_dosen(){
         return view('admin.import-dosen');
     }
+
+    public function index_mahasiswa(){
+        return view('admin.index-akun-mahasiswa');
+    }
+
+    public function import_mahasiswa(){
+        return view('admin.import-mahasiswa');
+    }
 }
