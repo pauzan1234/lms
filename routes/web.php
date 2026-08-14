@@ -46,5 +46,9 @@ Route::get('/akun_dosen', [AccountController::class, 'index'])->name('akun_dosen
 
 Route::get('/akun/dosen/import',[AccountController::class,'import_dosen'])->name('dosen.import');
 
+Route::get('/akun_mahasiswa', [AccountController::class, 'index_mahasiswa'])->name('akun_mahasiswa.index');
+
+Route::get('/akun/mahasiswa/import',[AccountController::class,'import_mahasiswa'])->name('mahasiswa.import');
+
 
 require __DIR__.'/auth.php';
