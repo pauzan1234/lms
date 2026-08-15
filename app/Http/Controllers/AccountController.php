@@ -154,5 +154,11 @@ class AccountController extends Controller
                     'Import gagal. Terjadi kesalahan saat memproses file Excel.'
                 );
         }
+    public function index_mahasiswa(){
+        return view('admin.index-akun-mahasiswa');
+    }
+
+    public function import_mahasiswa(){
+        return view('admin.import-mahasiswa');
     }
 }

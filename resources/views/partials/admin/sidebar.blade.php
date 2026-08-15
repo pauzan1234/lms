@@ -70,7 +70,7 @@
     Dosen
   </a>
   
-  <a  href="#"
+  <a  href="{{ route('akun_mahasiswa.index') }}"
     class="px-3 py-2 rounded-lg text-paper/60 hover:bg-white/5 hover:text-paper text-sm transition-colors"
   >
     Mahasiswa
