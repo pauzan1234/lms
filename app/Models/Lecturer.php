@@ -15,6 +15,7 @@ class Lecturer extends Model
         'user_id',
         'nidn',
         'study_program',
+        'prodi_id',
         'phone',
     ];
 

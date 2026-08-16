@@ -3,35 +3,39 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
+use Maatwebsite\Excel\Facades\Excel;
 
 use App\Models\User;
 use App\Models\Lecturer;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use App\Imports\LecturerImport;
-use Maatwebsite\Excel\Facades\Excel;
-use Maatwebsite\Excel\Validators\ValidationException;
 
 class AccountController extends Controller
 {
-    // modal tambah akun dosen by admin 
+    // ============================================================
+    // MENAMPILKAN DATA AKUN DOSEN
+    // ============================================================
     public function index()
     {
         $akundosen = Lecturer::with('user')
             ->latest()
             ->get();
-        // dd($akundosen);
 
         return view('admin.index-akun_dosen', compact('akundosen'));
     }
 
-    // page import dosen by admin
+    // ============================================================
+    // HALAMAN IMPORT DOSEN
+    // ============================================================
     public function import_dosen()
     {
         return view('admin.import-dosen');
     }
 
-    // process tambah akun admin
+    // ============================================================
+    // PROSES TAMBAH AKUN DOSEN
+    // ============================================================
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -98,7 +102,9 @@ class AccountController extends Controller
             ->with('success', 'Akun dosen berhasil dibuat.');
     }
 
-    // process import akun dosen by admin
+    // ============================================================
+    // PROSES IMPORT AKUN DOSEN DARI EXCEL
+    // ============================================================
     public function import(Request $request)
     {
         // Validasi file upload
@@ -126,6 +132,7 @@ class AccountController extends Controller
             return redirect()
                 ->route('dosen.import')
                 ->with('success', 'Data akun dosen berhasil diimport.');
+
         } catch (ValidationException $e) {
 
             $errors = [];
@@ -143,6 +150,7 @@ class AccountController extends Controller
             return redirect()
                 ->route('dosen.import')
                 ->with('error', $errors);
+
         } catch (\Throwable $e) {
 
             report($e);
@@ -154,11 +162,21 @@ class AccountController extends Controller
                     'Import gagal. Terjadi kesalahan saat memproses file Excel.'
                 );
         }
-    public function index_mahasiswa(){
+    }
+
+    // ============================================================
+    // HALAMAN AKUN MAHASISWA
+    // ============================================================
+    public function index_mahasiswa()
+    {
         return view('admin.index-akun-mahasiswa');
     }
 
-    public function import_mahasiswa(){
+    // ============================================================
+    // HALAMAN IMPORT MAHASISWA
+    // ============================================================
+    public function import_mahasiswa()
+    {
         return view('admin.import-mahasiswa');
     }
 }
