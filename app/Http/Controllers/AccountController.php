@@ -4,12 +4,17 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\ValidationException;
+// use Illuminate\Validation\ValidationException;
+use Maatwebsite\Excel\Validators\ValidationException;
 use Maatwebsite\Excel\Facades\Excel;
 
 use App\Models\User;
 use App\Models\Lecturer;
+use App\Models\Student;
 use App\Imports\LecturerImport;
+use App\Models\Prodi;
+
+use App\Imports\StudentImport;
 
 class AccountController extends Controller
 {
@@ -18,11 +23,14 @@ class AccountController extends Controller
     // ============================================================
     public function index()
     {
+        $prodi = Prodi::latest()
+            ->get();
+
         $akundosen = Lecturer::with('user')
             ->latest()
             ->get();
 
-        return view('admin.index-akun_dosen', compact('akundosen'));
+        return view('admin.index-akun_dosen', compact('akundosen', 'prodi'));
     }
 
     // ============================================================
@@ -59,7 +67,7 @@ class AccountController extends Controller
                 'unique:users,email',
             ],
 
-            'study_program' => [
+            'prodi_id' => [
                 'required',
                 'string',
                 'max:255',
@@ -92,7 +100,7 @@ class AccountController extends Controller
             Lecturer::create([
                 'user_id' => $user->id,
                 'nidn' => $validated['nidn'],
-                'study_program' => $validated['study_program'],
+                'prodi_id' => $validated['prodi_id'],
                 'phone' => $validated['phone'] ?? null,
             ]);
         });
@@ -107,7 +115,6 @@ class AccountController extends Controller
     // ============================================================
     public function import(Request $request)
     {
-        // Validasi file upload
         $request->validate([
             'file_excel' => [
                 'required',
@@ -132,7 +139,6 @@ class AccountController extends Controller
             return redirect()
                 ->route('dosen.import')
                 ->with('success', 'Data akun dosen berhasil diimport.');
-
         } catch (ValidationException $e) {
 
             $errors = [];
@@ -150,7 +156,6 @@ class AccountController extends Controller
             return redirect()
                 ->route('dosen.import')
                 ->with('error', $errors);
-
         } catch (\Throwable $e) {
 
             report($e);
@@ -169,7 +174,16 @@ class AccountController extends Controller
     // ============================================================
     public function index_mahasiswa()
     {
-        return view('admin.index-akun-mahasiswa');
+        $prodi = Prodi::latest()
+            ->get();
+
+        $akunmahasiswa = Student::with('user')
+            ->latest()
+            ->get();
+
+        // dd($akunmahasiswa);
+
+        return view('admin.index-akun-mahasiswa', compact('prodi', 'akunmahasiswa'));
     }
 
     // ============================================================
@@ -177,6 +191,160 @@ class AccountController extends Controller
     // ============================================================
     public function import_mahasiswa()
     {
-        return view('admin.import-mahasiswa');
+        $prodi = Prodi::get();
+
+        return view('admin.import-mahasiswa', compact('prodi'));
+    }
+
+    // ============================================================
+    // PROSES TAMBAH AKUN MAHASISWA
+    // ============================================================
+    public function store_mahasiswa(Request $request)
+    {
+        $validated = $request->validate([
+            'nim' => [
+                'required',
+                'string',
+                'max:12',
+                'unique:students,nim',
+            ],
+
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+                'unique:users,email',
+            ],
+
+            'prodi_id' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+            'semester' => [
+                'required',
+                'string',
+                'max:4',
+            ],
+
+            'phone' => [
+                'nullable',
+                'string',
+                'max:20',
+            ],
+        ]);
+
+        DB::transaction(function () use ($validated) {
+
+            /*
+             * Password awal menggunakan npm.
+             *
+             * Contoh:
+             * NPM = 1234567890
+             * Password awal = 1234567890
+             */
+
+            $user = User::create([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'password' => $validated['nim'],
+                'role' => 'student',
+            ]);
+
+            Student::create([
+                'user_id' => $user->id,
+                'nim' => $validated['nim'],
+                'prodi_id' => $validated['prodi_id'],
+                'semester' => $validated['semester'],
+                'phone' => $validated['phone'] ?? null,
+            ]);
+        });
+
+        return redirect()
+            ->route('akun_mahasiswa.index')
+            ->with('success', 'Akun mahasiswa berhasil dibuat.');
+    }
+
+    // ============================================================
+    // PROSES IMPORT AKUN MAHASISWA DARI EXCEL
+    // ============================================================
+    public function importStudent(Request $request)
+    {
+        // dd('METHOD IMPORT STUDENT TERPANGGIL');
+
+        $request->validate([
+            'file_excel' => [
+                'required',
+                'file',
+                'mimes:xlsx,xls',
+                'max:5120',
+            ],
+        ], [
+            'file_excel.required' =>
+            'File Excel wajib dipilih.',
+
+            'file_excel.file' =>
+            'File yang diupload tidak valid.',
+
+            'file_excel.mimes' =>
+            'File harus berformat .xlsx atau .xls.',
+
+            'file_excel.max' =>
+            'Ukuran file maksimal 5 MB.',
+        ]);
+
+        try {
+            Excel::import(
+                new StudentImport,
+                $request->file('file_excel')
+            );
+            return redirect()
+                ->route('mahasiswa.import')
+                ->with(
+                    'success',
+                    'Data akun mahasiswa berhasil diimport.'
+                );
+        } catch (ValidationException $e) {
+
+            dd([
+                'ERROR' => true,
+                'class' => get_class($e),
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            $errors = [];
+
+            foreach ($e->failures() as $failure) {
+
+                $errors[] = [
+                    'row' => $failure->row(),
+                    'attribute' => $failure->attribute(),
+                    'errors' => $failure->errors(),
+                    'values' => $failure->values(),
+                ];
+            }
+
+            return redirect()
+                ->route('mahasiswa.import')
+                ->with('import_errors', $errors);
+        } catch (\Throwable $e) {
+
+            report($e);
+
+            return redirect()
+                ->route('mahasiswa.import')
+                ->with(
+                    'error',
+                    $e->getMessage()
+                );
+        }
     }
 }

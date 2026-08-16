@@ -135,6 +135,16 @@
                             <p class="text-sm font-semibold">
                                 Data gagal disimpan
                             </p>
+                            {{-- <ul class="text-sm space-y-1 list-disc list-inside">
+
+                                @foreach (session('error') as $error)
+                                    <li>
+                                        Baris {{ $error['row'] }}:
+                                        {{ implode(', ', $error['errors']) }}
+                                    </li>
+                                @endforeach
+
+                            </ul> --}}
                         </div>
                     @endif
                     @yield('content')
