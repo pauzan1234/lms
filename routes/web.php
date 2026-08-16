@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\MatakuliahController;
+use App\Http\Controllers\DosenController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -57,6 +59,12 @@ Route::get('/akun/dosen/import', [AccountController::class, 'import_dosen'])->na
 Route::get('/akun_mahasiswa', [AccountController::class, 'index_mahasiswa'])->name('akun_mahasiswa.index');
 
 Route::get('/akun/mahasiswa/import',[AccountController::class,'import_mahasiswa'])->name('mahasiswa.import');
+
+Route::get('/matakuliah',[MatakuliahController::class, 'index'])->name('matakuliah.index');
+
+Route::get('/penugasan_mk',[MatakuliahController::class, 'dosen_dan_mhs'])->name('matakuliah.pengampu');
+
+Route::get('/dosen/{prodi}', [DosenController::class, 'show'])->name('dosen.prodi');
 
 
 require __DIR__ . '/auth.php';
