@@ -54,7 +54,7 @@
             </div>
         </div>
 
-        href="{{ asset('templates/template_akun_dosen.xlsx') }}"
+        <a href="{{ asset('templates/template_import_dosen.xlsx') }}"
         download
         class="inline-flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-lg border border-line hover:bg-paper/60 transition-colors"
         >

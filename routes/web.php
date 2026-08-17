@@ -45,11 +45,23 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
 
+    // ============================================================
+    // PROSES TAMBAH AKUN DOSEN
+    // ============================================================
     Route::post('/dosen', [AccountController::class, 'store'])
         ->name('admin.dosen.buatAkun');
 
     Route::post('/admin/dosen/import', [AccountController::class, 'import'])
         ->name('dosen.import.process');
+    
+    // ============================================================
+    // PROSES TAMBAH AKUN MAHASISWA
+    // ============================================================
+    Route::post('/mahasiswa', [AccountController::class, 'store_mahasiswa'])
+        ->name('admin.mahasiswa.buatAkun');
+
+    Route::post('/mahasiswa/import', [AccountController::class, 'importStudent'])
+        ->name('admin.mahasiswa.import.process');
 });
 
 Route::get('/akun_dosen', [AccountController::class, 'index'])->name('akun_dosen.index');
@@ -58,11 +70,11 @@ Route::get('/akun/dosen/import', [AccountController::class, 'import_dosen'])->na
 
 Route::get('/akun_mahasiswa', [AccountController::class, 'index_mahasiswa'])->name('akun_mahasiswa.index');
 
-Route::get('/akun/mahasiswa/import',[AccountController::class,'import_mahasiswa'])->name('mahasiswa.import');
+Route::get('/akun/mahasiswa/import', [AccountController::class, 'import_mahasiswa'])->name('mahasiswa.import');
 
-Route::get('/matakuliah',[MatakuliahController::class, 'index'])->name('matakuliah.index');
+Route::get('/matakuliah', [MatakuliahController::class, 'index'])->name('matakuliah.index');
 
-Route::get('/penugasan_mk',[MatakuliahController::class, 'dosen_dan_mhs'])->name('matakuliah.pengampu');
+Route::get('/penugasan_mk', [MatakuliahController::class, 'dosen_dan_mhs'])->name('matakuliah.pengampu');
 
 Route::get('/dosen/{prodi}', [DosenController::class, 'show'])->name('dosen.prodi');
 
