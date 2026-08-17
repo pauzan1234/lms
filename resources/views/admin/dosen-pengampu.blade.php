@@ -1,11 +1,11 @@
 @extends('admin.app-admin')
 
 @section('ketjudul')
-Selamat Datang di
+DAFTAR
 @endsection
 
 @section('judul')
-Dosen Pengampu Matakuliah
+Program Studi
 @endsection
 
 @section('content')
