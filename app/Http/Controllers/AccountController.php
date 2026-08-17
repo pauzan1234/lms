@@ -276,8 +276,6 @@ class AccountController extends Controller
     // ============================================================
     public function importStudent(Request $request)
     {
-        // dd('METHOD IMPORT STUDENT TERPANGGIL');
-
         $request->validate([
             'file_excel' => [
                 'required',
@@ -300,10 +298,12 @@ class AccountController extends Controller
         ]);
 
         try {
+
             Excel::import(
                 new StudentImport,
                 $request->file('file_excel')
             );
+
             return redirect()
                 ->route('mahasiswa.import')
                 ->with(
@@ -311,14 +311,6 @@ class AccountController extends Controller
                     'Data akun mahasiswa berhasil diimport.'
                 );
         } catch (ValidationException $e) {
-
-            dd([
-                'ERROR' => true,
-                'class' => get_class($e),
-                'message' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-            ]);
 
             $errors = [];
 
@@ -334,7 +326,7 @@ class AccountController extends Controller
 
             return redirect()
                 ->route('mahasiswa.import')
-                ->with('import_errors', $errors);
+                ->with('error', $errors);
         } catch (\Throwable $e) {
 
             report($e);
@@ -343,7 +335,7 @@ class AccountController extends Controller
                 ->route('mahasiswa.import')
                 ->with(
                     'error',
-                    $e->getMessage()
+                    'Import gagal. Terjadi kesalahan saat memproses file Excel.'
                 );
         }
     }
