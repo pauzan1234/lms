@@ -53,7 +53,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
 
     Route::post('/admin/dosen/import', [AccountController::class, 'import'])
         ->name('dosen.import.process');
-    
+
     // ============================================================
     // PROSES TAMBAH AKUN MAHASISWA
     // ============================================================
@@ -62,6 +62,12 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
 
     Route::post('/mahasiswa/import', [AccountController::class, 'importStudent'])
         ->name('admin.mahasiswa.import.process');
+
+    // ============================================================
+    // PROSES TAMBAH matkul
+    // ============================================================
+    Route::post('/mahasiswa/import', [MatakuliahController::class, 'storeMatkul'])
+        ->name('admin.tambah.matkul');
 });
 
 Route::get('/akun_dosen', [AccountController::class, 'index'])->name('akun_dosen.index');
