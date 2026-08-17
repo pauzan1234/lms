@@ -4,6 +4,7 @@ namespace App\Imports;
 
 use App\Models\User;
 use App\Models\Lecturer;
+use App\Models\Prodi;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -19,10 +20,29 @@ class LecturerImport implements ToCollection, WithHeadingRow, WithValidation
 
             foreach ($rows as $row) {
 
-                $programStudi = $this->normalisasiProgramStudi(
-                    $row['program_studi']
-                );
+                /*
+                 * Cari prodi berdasarkan nama dari Excel
+                 */
+                $prodi = Prodi::whereRaw(
+                    'LOWER(nama_prodi) = ?',
+                    [strtolower(trim($row['program_studi']))]
+                )->first();
 
+                /*
+                 * Jika prodi tidak ditemukan,
+                 * batalkan proses import
+                 */
+                if (!$prodi) {
+                    throw new \Exception(
+                        'Program studi "' .
+                        $row['program_studi'] .
+                        '" tidak ditemukan di database.'
+                    );
+                }
+
+                /*
+                 * Buat akun user
+                 */
                 $user = User::create([
                     'name' => trim($row['nama']),
                     'email' => trim($row['email']),
@@ -30,34 +50,19 @@ class LecturerImport implements ToCollection, WithHeadingRow, WithValidation
                     'role' => 'lecturer',
                 ]);
 
+                /*
+                 * Buat data lecturer
+                 */
                 Lecturer::create([
                     'user_id' => $user->id,
                     'nidn' => (string) $row['nidn'],
-                    'study_program' => $programStudi,
+                    'prodi_id' => $prodi->id,
                     'phone' => !empty($row['phone'])
                         ? (string) $row['phone']
                         : null,
                 ]);
             }
         });
-    }
-
-    private function normalisasiProgramStudi($programStudi): string
-    {
-        $programStudi = strtolower(trim($programStudi));
-
-        return match ($programStudi) {
-
-            'teknik komputer' => 'Teknik Komputer',
-
-            'teknik sipil' => 'Teknik Sipil',
-
-            'teknik lingkungan' => 'Teknik Lingkungan',
-
-            default => throw new \Exception(
-                'Program studi tidak valid: ' . $programStudi
-            ),
-        };
     }
 
     public function rules(): array
@@ -102,31 +107,37 @@ class LecturerImport implements ToCollection, WithHeadingRow, WithValidation
         return [
 
             'nidn.required' =>
-            'NIDN wajib diisi.',
+                'NIDN wajib diisi.',
 
             'nidn.numeric' =>
-            'NIDN hanya boleh berisi angka.',
+                'NIDN hanya boleh berupa angka.',
 
             'nidn.digits_between' =>
-            'NIDN harus terdiri dari 1 sampai 20 digit.',
+                'NIDN harus terdiri dari 1 sampai 20 digit.',
 
             'nidn.unique' =>
-            'NIDN sudah terdaftar.',
+                'NIDN sudah terdaftar.',
 
             'nama.required' =>
-            'Nama dosen wajib diisi.',
+                'Nama dosen wajib diisi.',
 
             'email.required' =>
-            'Email wajib diisi.',
+                'Email wajib diisi.',
 
             'email.email' =>
-            'Format email tidak valid.',
+                'Format email tidak valid.',
 
             'email.unique' =>
-            'Email sudah digunakan.',
+                'Email sudah digunakan.',
 
             'program_studi.required' =>
-            'Program studi wajib diisi.',
+                'Program studi wajib diisi.',
+
+            'phone.numeric' =>
+                'Nomor telepon hanya boleh berupa angka.',
+
+            'phone.digits_between' =>
+                'Nomor telepon harus terdiri dari 1 sampai 20 digit.',
         ];
     }
 }

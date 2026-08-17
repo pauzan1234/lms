@@ -74,7 +74,7 @@
             <tbody>
                 @forelse ($akundosen as $mk)
                     <tr class="border-b border-line last:border-0 hover:bg-paper/60 transition-colors">
-                        <td class="py-3 pr-4 font-mono text-xs text-ink/60">{{ $mk['no'] }}</td>
+                        <td class="py-3 pr-4 font-mono text-xs text-ink/60">{{ $loop->iteration }}</td>
                         <td class="py-3 pr-4 font-medium">{{ $mk['nidn'] }}</td>
                         <td class="py-3 pr-4 text-ink/70">{{ $mk->user->name }}</td>
                         <td class="py-3 pr-4 text-ink/70">{{ $mk->user->email }}</td>
@@ -168,28 +168,21 @@
                         Program Studi
                     </label>
 
-                    <select name="study_program" required
+                    <select name="prodi_id" required
                         class="w-full border border-line rounded-lg px-3 py-2 text-sm
                       bg-white focus:outline-none focus:ring-2 focus:ring-teal/40">
-                        <option value="" disabled selected>
+                        <option value="" disabled {{ old('prodi_id') ? '' : 'selected' }}>
                             Pilih Program Studi
                         </option>
 
-                        <option value="Teknik Komputer" {{ old('study_program') == 'Teknik Komputer' ? 'selected' : '' }}>
-                            Teknik Komputer
-                        </option>
-
-                        <option value="Teknik Sipil" {{ old('study_program') == 'Teknik Sipil' ? 'selected' : '' }}>
-                            Teknik Sipil
-                        </option>
-
-                        <option value="Teknik Lingkungan"
-                            {{ old('study_program') == 'Teknik Lingkungan' ? 'selected' : '' }}>
-                            Teknik Lingkungan
-                        </option>
+                        @foreach ($prodi as $item)
+                            <option value="{{ $item->id }}" {{ old('prodi_id') == $item->id ? 'selected' : '' }}>
+                                {{ $item->nama_prodi }}
+                            </option>
+                        @endforeach
                     </select>
 
-                    @error('study_program')
+                    @error('prodi_id')
                         <p class="mt-1 text-xs text-red-500">
                             {{ $message }}
                         </p>
