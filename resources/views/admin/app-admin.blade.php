@@ -135,7 +135,7 @@
                             <p class="text-sm font-semibold">
                                 Data gagal disimpan
                             </p>
-                            {{-- <ul class="text-sm space-y-1 list-disc list-inside">
+                            <ul class="text-sm space-y-1 list-disc list-inside">
 
                                 @foreach (session('error') as $error)
                                     <li>
@@ -144,7 +144,7 @@
                                     </li>
                                 @endforeach
 
-                            </ul> --}}
+                            </ul>
                         </div>
                     @endif
                     @yield('content')
