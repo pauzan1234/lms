@@ -1,10 +1,10 @@
 @extends('admin.app-admin')
 @section('ketjudul')
-    Selamat Datang di
+    DAFTAR
 @endsection
 
 @section('judul')
-    Akun Pengguna E-Learning
+    Program Studi
 @endsection
 
 @section('content')

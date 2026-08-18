@@ -10,114 +10,34 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Concerns\WithValidation;
+use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 
-class StudentImport implements ToCollection, WithHeadingRow
+class StudentImport implements ToCollection, WithHeadingRow, WithValidation, SkipsEmptyRows
 {
     public function collection(Collection $rows): void
     {
         DB::transaction(function () use ($rows) {
 
-            foreach ($rows as $index => $row) {
-
-                // Abaikan baris yang benar-benar kosong
-                if (
-                    empty($row['nim']) &&
-                    empty($row['nama']) &&
-                    empty($row['email']) &&
-                    empty($row['program_studi']) &&
-                    empty($row['semester']) &&
-                    empty($row['phone'])
-                ) {
-                    continue;
-                }
+            foreach ($rows as $row) {
 
                 /*
-                 * Validasi NIM
-                 */
-                if (empty($row['nim'])) {
-                    throw new \Exception(
-                        'Baris ' . ($index + 2) . ': NIM wajib diisi.'
-                    );
-                }
-
-                if (!is_numeric($row['nim'])) {
-                    throw new \Exception(
-                        'Baris ' . ($index + 2) . ': NIM harus berupa angka.'
-                    );
-                }
-
-                /*
-                 * Validasi nama
-                 */
-                if (empty($row['nama'])) {
-                    throw new \Exception(
-                        'Baris ' . ($index + 2) . ': Nama mahasiswa wajib diisi.'
-                    );
-                }
-
-                /*
-                 * Validasi email
-                 */
-                if (empty($row['email'])) {
-                    throw new \Exception(
-                        'Baris ' . ($index + 2) . ': Email wajib diisi.'
-                    );
-                }
-
-                if (!filter_var($row['email'], FILTER_VALIDATE_EMAIL)) {
-                    throw new \Exception(
-                        'Baris ' . ($index + 2) . ': Format email tidak valid.'
-                    );
-                }
-
-                /*
-                 * Cek NIM sudah ada
-                 */
-                if (Student::where('nim', (string) $row['nim'])->exists()) {
-                    throw new \Exception(
-                        'Baris ' . ($index + 2) .
-                            ': NIM "' . $row['nim'] . '" sudah terdaftar.'
-                    );
-                }
-
-                /*
-                 * Cek email sudah ada
-                 */
-                if (User::where('email', trim($row['email']))->exists()) {
-                    throw new \Exception(
-                        'Baris ' . ($index + 2) .
-                            ': Email "' . $row['email'] . '" sudah digunakan.'
-                    );
-                }
-
-                /*
-                 * Cari program studi
+                 * Cari prodi berdasarkan nama dari Excel
                  */
                 $prodi = Prodi::whereRaw(
-                    'LOWER(TRIM(nama_prodi)) = ?',
+                    'LOWER(nama_prodi) = ?',
                     [strtolower(trim($row['program_studi']))]
                 )->first();
 
+                /*
+                 * Jika prodi tidak ditemukan,
+                 * batalkan proses import
+                 */
                 if (!$prodi) {
                     throw new \Exception(
-                        'Baris ' . ($index + 2) .
-                            ': Program studi "' .
+                        'Program studi "' .
                             $row['program_studi'] .
                             '" tidak ditemukan di database.'
-                    );
-                }
-
-                /*
-                 * Validasi semester
-                 */
-                if (
-                    !is_numeric($row['semester']) ||
-                    (int) $row['semester'] < 1 ||
-                    (int) $row['semester'] > 14
-                ) {
-                    throw new \Exception(
-                        'Baris ' . ($index + 2) .
-                            ': Semester harus berupa angka 1 sampai 14.'
                     );
                 }
 
@@ -127,12 +47,14 @@ class StudentImport implements ToCollection, WithHeadingRow
                 $user = User::create([
                     'name' => trim($row['nama']),
                     'email' => trim($row['email']),
-                    'password' => Hash::make((string) $row['nim']),
+                    'password' => Hash::make(
+                        (string) $row['nim']
+                    ),
                     'role' => 'student',
                 ]);
 
                 /*
-                 * Buat data mahasiswa
+                 * Buat data student
                  */
                 Student::create([
                     'user_id' => $user->id,
@@ -145,5 +67,96 @@ class StudentImport implements ToCollection, WithHeadingRow
                 ]);
             }
         });
+    }
+
+    public function rules(): array
+    {
+        return [
+
+            'nim' => [
+                'required',
+                'numeric',
+                'digits_between:1,20',
+                'unique:students,nim',
+            ],
+
+            'nama' => [
+                'required',
+                'string',
+                'max:255',
+            ],
+
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+                'unique:users,email',
+            ],
+
+            'program_studi' => [
+                'required',
+                'string',
+            ],
+
+            'semester' => [
+                'required',
+                'integer',
+                'between:1,14',
+            ],
+
+            'phone' => [
+                'nullable',
+                'numeric',
+                'digits_between:1,20',
+            ],
+        ];
+    }
+
+    public function customValidationMessages(): array
+    {
+        return [
+
+            'nim.required' =>
+            'NIM wajib diisi.',
+
+            'nim.numeric' =>
+            'NIM hanya boleh berupa angka.',
+
+            'nim.digits_between' =>
+            'NIM harus terdiri dari 1 sampai 20 digit.',
+
+            'nim.unique' =>
+            'NIM sudah terdaftar.',
+
+            'nama.required' =>
+            'Nama mahasiswa wajib diisi.',
+
+            'email.required' =>
+            'Email wajib diisi.',
+
+            'email.email' =>
+            'Format email tidak valid.',
+
+            'email.unique' =>
+            'Email sudah digunakan.',
+
+            'program_studi.required' =>
+            'Program studi wajib diisi.',
+
+            'phone.numeric' =>
+            'Nomor telepon hanya boleh berupa angka.',
+
+            'phone.digits_between' =>
+            'Nomor telepon harus terdiri dari 1 sampai 20 digit.',
+
+            'semester.required' =>
+            'Semester wajib diisi.',
+
+            'semester.integer' =>
+            'Semester harus berupa angka.',
+
+            'semester.between' =>
+            'Semester harus antara 1 sampai 14.',
+        ];
     }
 }
