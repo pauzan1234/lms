@@ -7,6 +7,8 @@
     <title>Dashboard — E-Learning UNWIR</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link
         href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap"
@@ -111,41 +113,41 @@
                 </div>
                 <div class="bg-white border border-line rounded-2xl p-6 mt-6">
                     @if ($errors->any())
-                        <div class="mb-5 p-4 rounded-lg bg-red-50 border border-red-200 text-red-700">
-                            <p class="text-sm font-semibold">
-                                Data gagal disimpan
-                            </p>
+                    <div class="mb-5 p-4 rounded-lg bg-red-50 border border-red-200 text-red-700">
+                        <p class="text-sm font-semibold">
+                            Data gagal disimpan
+                        </p>
 
-                            <ul class="mt-1 text-sm list-disc list-inside">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
+                        <ul class="mt-1 text-sm list-disc list-inside">
+                            @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
                     @endif
                     @if (session('success'))
-                        <div class="mb-5 p-4 rounded-lg bg-green-50 border border-green-200 text-green-700">
-                            <p class="text-sm font-semibold">
-                                Data berhasil disimpan
-                            </p>
-                        </div>
+                    <div class="mb-5 p-4 rounded-lg bg-green-50 border border-green-200 text-green-700">
+                        <p class="text-sm font-semibold">
+                            Data berhasil disimpan
+                        </p>
+                    </div>
                     @endif
                     @if (session('error'))
-                        <div class="mb-5 p-4 rounded-lg bg-red-50 border border-red-200 text-red-700">
-                            <p class="text-sm font-semibold">
-                                Data gagal disimpan
-                            </p>
-                            <ul class="text-sm space-y-1 list-disc list-inside">
+                    <div class="mb-5 p-4 rounded-lg bg-red-50 border border-red-200 text-red-700">
+                        <p class="text-sm font-semibold">
+                            Data gagal disimpan
+                        </p>
+                        <ul class="text-sm space-y-1 list-disc list-inside">
 
-                                @foreach (session('error') as $error)
-                                    <li>
-                                        Baris {{ $error['row'] }}:
-                                        {{ implode(', ', $error['errors']) }}
-                                    </li>
-                                @endforeach
+                            @foreach (session('error') as $error)
+                            <li>
+                                Baris {{ $error['row'] }}:
+                                {{ implode(', ', $error['errors']) }}
+                            </li>
+                            @endforeach
 
-                            </ul>
-                        </div>
+                        </ul>
+                    </div>
                     @endif
                     @yield('content')
                 </div>

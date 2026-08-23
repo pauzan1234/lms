@@ -1,11 +1,11 @@
 @extends('admin.app-admin')
 
 @section('ketjudul')
-    Daftar
+Daftar
 @endsection
 
 @section('judul')
-    Dosen Prodi {{ $prodi->nama_prodi }}
+Dosen Prodi {{ $prodi->nama_prodi }}
 @endsection
 
 @section('content')
@@ -23,32 +23,32 @@
         </p>
     </div>
 
-   {{-- Daftar Dosen --}}
-<div class="bg-white rounded-lg shadow">
+    {{-- Daftar Dosen --}}
+    <div class="bg-white rounded-lg shadow">
 
-    <div class="p-4 border-b">
-        <h3 class="font-semibold">
-            Daftar Dosen
-        </h3>
-    </div>
+        <div class="p-4 border-b">
+            <h3 class="font-semibold">
+                Daftar Dosen
+            </h3>
+        </div>
 
-    <div class="p-4">
+        <div class="p-4">
 
-        <div class="overflow-x-auto">
+            <div class="overflow-x-auto">
 
-            <table class="w-full text-sm">
+                <table class="w-full text-sm">
 
-                <thead>
-                    <tr class="border-b text-left">
-                        <th class="py-3 px-4 w-16">No</th>
-                        <th class="py-3 px-4">Nama Dosen</th>
-                        <th class="py-3 px-4 w-32">Aksi</th>
-                    </tr>
-                </thead>
+                    <thead>
+                        <tr class="border-b text-left">
+                            <th class="py-3 px-4 w-16">No</th>
+                            <th class="py-3 px-4">Nama Dosen</th>
+                            <th class="py-3 px-4 w-32">Aksi</th>
+                        </tr>
+                    </thead>
 
-                <tbody>
+                    <tbody>
 
-                    @forelse ($lecturers as $lecturer)
+                        @forelse ($lecturers as $lecturer)
 
                         <tr class="border-b last:border-b-0 hover:bg-gray-50">
 
@@ -72,32 +72,32 @@
 
                             {{-- Aksi --}}
                             <td class="py-3 px-4">
-    <div class="flex items-center gap-2">
+                                <div class="flex items-center gap-2">
 
-        <button
-            type="button"
-            onclick="openMkAmpuModal({{ $lecturer->id }}, '{{ addslashes($lecturer->user->name) }}')"
-            class="px-3 py-2 rounded-md bg-blue-600 text-white text-xs font-medium hover:bg-blue-700 transition">
+                                    <button
+                                        type="button"
+                                        onclick="openMkAmpuModal({{ $lecturer->id }}, '{{ addslashes($lecturer->user->name) }}')"
+                                        class="px-3 py-2 rounded-md bg-blue-600 text-white text-xs font-medium hover:bg-blue-700 transition">
 
-            MK diampu
+                                        MK diampu
 
-        </button>
+                                    </button>
 
-        <button
-            type="button"
-            onclick="openMkModal({{ $lecturer->id }}, '{{ addslashes($lecturer->user->name) }}')"
-            class="px-3 py-2 rounded-md bg-blue-600 text-white text-xs font-medium hover:bg-blue-700 transition">
+                                    <button
+                                        type="button"
+                                        onclick="openMkModal({{ $lecturer->id }}, '{{ addslashes($lecturer->user->name) }}')"
+                                        class="px-3 py-2 rounded-md bg-blue-600 text-white text-xs font-medium hover:bg-blue-700 transition">
 
-            + Tambah MK
+                                        Tambah MK
 
-        </button>
+                                    </button>
 
-    </div>
-</td>
+                                </div>
+                            </td>
 
                         </tr>
 
-                    @empty
+                        @empty
 
                         <tr>
 
@@ -110,17 +110,17 @@
 
                         </tr>
 
-                    @endforelse
+                        @endforelse
 
-                </tbody>
+                    </tbody>
 
-            </table>
+                </table>
+
+            </div>
 
         </div>
 
     </div>
-
-</div>
 
 </div>
 {{-- Modal Tambah MK --}}
@@ -228,43 +228,43 @@
                 <table class="w-full text-sm">
 
                     <thead>
-    <tr class="border-b text-left">
+                        <tr class="border-b text-left">
 
-        <th class="py-3 px-4 w-16">
-            No
-        </th>
+                            <th class="py-3 px-4 w-16">
+                                No
+                            </th>
 
-        <th class="py-3 px-4">
-            Kode MK
-        </th>
+                            <th class="py-3 px-4">
+                                Kode MK
+                            </th>
 
-        <th class="py-3 px-4">
-            Nama Mata Kuliah
-        </th>
+                            <th class="py-3 px-4">
+                                Nama Mata Kuliah
+                            </th>
 
-        <th class="py-3 px-4 text-center">
-            SKS
-        </th>
+                            <th class="py-3 px-4 text-center">
+                                SKS
+                            </th>
 
-        <th class="py-3 px-4 text-center">
-            Aksi
-        </th>
+                            <th class="py-3 px-4 text-center">
+                                Aksi
+                            </th>
 
-    </tr>
-</thead>
+                        </tr>
+                    </thead>
 
-                   <tbody id="daftarMkAmpu">
+                    <tbody id="daftarMkAmpu">
 
-    <tr>
-        <td colspan="5"
-            class="py-6 text-center text-gray-400">
+                        <tr>
+                            <td colspan="5"
+                                class="py-6 text-center text-gray-400">
 
-            Memuat data...
+                                Memuat data...
 
-        </td>
-    </tr>
+                            </td>
+                        </tr>
 
-</tbody>
+                    </tbody>
 
                 </table>
 
@@ -292,11 +292,9 @@
 </div>
 
 <script>
-
     let selectedLecturerId = null;
 
-    function openMkModal(lecturerId, lecturerName)
-    {
+    function openMkModal(lecturerId, lecturerName) {
         selectedLecturerId = lecturerId;
 
         document.getElementById('namaDosenModal').innerText =
@@ -319,8 +317,7 @@
     }
 
 
-    function closeMkModal()
-    {
+    function closeMkModal() {
         const modal = document.getElementById('mkModal');
 
         modal.classList.add('hidden');
@@ -330,8 +327,7 @@
     }
 
 
-    function searchMk()
-    {
+    function searchMk() {
         const keyword =
             document.getElementById('searchMk').value.trim();
 
@@ -408,69 +404,67 @@
     }
 
 
- function pilihMk(kodeMk)
-{
-    if (!selectedLecturerId) {
-        alert('Dosen belum dipilih.');
-        return;
+    function pilihMk(kodeMk) {
+        if (!selectedLecturerId) {
+            alert('Dosen belum dipilih.');
+            return;
+        }
+
+        fetch(`{{ route('admin.pengajaran.store') }}`, {
+
+                method: 'POST',
+
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+
+                body: JSON.stringify({
+
+                    lecturer_id: selectedLecturerId,
+                    kode_mk: kodeMk
+
+                })
+
+            })
+            .then(async response => {
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(
+                        data.message ?? 'Gagal menyimpan data.'
+                    );
+                }
+
+                return data;
+
+            })
+            .then(data => {
+
+                if (data.success) {
+
+                    closeMkModal();
+
+                    alert(data.message);
+
+                }
+
+            })
+            .catch(error => {
+
+                console.error(error);
+
+                alert(error.message);
+
+            });
     }
 
-    fetch(`{{ route('admin.pengajaran.store') }}`, {
-
-        method: 'POST',
-
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-            'Accept': 'application/json'
-        },
-
-        body: JSON.stringify({
-
-            lecturer_id: selectedLecturerId,
-            kode_mk: kodeMk
-
-        })
-
-    })
-    .then(async response => {
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(
-                data.message ?? 'Gagal menyimpan data.'
-            );
-        }
-
-        return data;
-
-    })
-    .then(data => {
-
-        if (data.success) {
-
-            closeMkModal();
-
-            alert(data.message);
-
-        }
-
-    })
-    .catch(error => {
-
-        console.error(error);
-
-        alert(error.message);
-
-    });
-}
 
 
 
-
-    function openMkAmpuModal(lecturerId, lecturerName)
-    {
+    function openMkAmpuModal(lecturerId, lecturerName) {
         const modal = document.getElementById('mkAmpuModal');
 
         const namaDosen =
@@ -505,22 +499,22 @@
 
         // Ambil data MK
         fetch(
-            `{{ url('/pengajaran') }}/${lecturerId}/matakuliah`
-        )
-        .then(response => {
+                `{{ url('/pengajaran') }}/${lecturerId}/matakuliah`
+            )
+            .then(response => {
 
-            if (!response.ok) {
-                throw new Error('Gagal mengambil data.');
-            }
+                if (!response.ok) {
+                    throw new Error('Gagal mengambil data.');
+                }
 
-            return response.json();
+                return response.json();
 
-        })
-        .then(data => {
+            })
+            .then(data => {
 
-            if (data.length === 0) {
+                if (data.length === 0) {
 
-                daftar.innerHTML = `
+                    daftar.innerHTML = `
                     <tr>
                         <td colspan="4"
                             class="py-6 text-center text-gray-400">
@@ -531,11 +525,11 @@
                     </tr>
                 `;
 
-                return;
-            }
+                    return;
+                }
 
 
-           daftar.innerHTML = data.map((mk, index) => `
+                daftar.innerHTML = data.map((mk, index) => `
 
     <tr class="border-b last:border-b-0 hover:bg-gray-50">
 
@@ -572,12 +566,12 @@
 
 `).join('');
 
-        })
-        .catch(error => {
+            })
+            .catch(error => {
 
-            console.error(error);
+                console.error(error);
 
-            daftar.innerHTML = `
+                daftar.innerHTML = `
                 <tr>
                     <td colspan="4"
                         class="py-6 text-center text-red-500">
@@ -588,19 +582,16 @@
                 </tr>
             `;
 
-        });
+            });
     }
 
 
-    function closeMkAmpuModal()
-    {
+    function closeMkAmpuModal() {
         const modal =
             document.getElementById('mkAmpuModal');
 
         modal.classList.add('hidden');
         modal.classList.remove('flex');
     }
-
-
 </script>
 @endsection

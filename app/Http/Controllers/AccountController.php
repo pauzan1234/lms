@@ -158,23 +158,22 @@ class AccountController extends Controller
                 ->with('error', $errors);
         } catch (\Throwable $e) {
 
-    report($e);
+            report($e);
 
-    return redirect()
-        ->route('dosen.import')
-        ->with('error', [
-            [
-                'row' => null,
-                'attribute' => null,
-                'errors' => [
-                    $e->getMessage(),
-                ],
-                'values' => [],
-            ],
-        ]);
-}
+            return redirect()
+                ->route('dosen.import')
+                ->with('error', [
+                    [
+                        'row' => null,
+                        'attribute' => null,
+                        'errors' => [
+                            $e->getMessage(),
+                        ],
+                        'values' => [],
+                    ],
+                ]);
+        }
     }
-
     // ============================================================
     // HALAMAN AKUN MAHASISWA
     // ============================================================
@@ -182,19 +181,17 @@ class AccountController extends Controller
     {
         $prodi = Prodi::latest()->get();
 
-    $akunmahasiswa = Student::with([
-        'user',
-        'prodi'
-    ])
-    ->latest()
-    ->get();
+        $akunmahasiswa = Student::with([
+            'user',
+            'prodi'
+        ])
+            ->latest()
+            ->get();
 
-    return view(
-        'admin.index-akun-mahasiswa',
-        compact('prodi', 'akunmahasiswa')
-    );
-
-        
+        return view(
+            'admin.index-akun-mahasiswa',
+            compact('prodi', 'akunmahasiswa')
+        );
     }
 
     // ============================================================

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Lecturer;
+use App\Models\Pengajaran;
 
 class Matakuliah extends Model
 {
@@ -39,6 +40,14 @@ class Matakuliah extends Model
             'lecturer_id',
             'kode_mk',
             'id'
+        );
+    }
+    public function pengajaran()
+    {
+        return $this->hasMany(
+            Pengajaran::class,
+            'kode_mk',
+            'kode_mk'
         );
     }
 }
