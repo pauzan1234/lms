@@ -1,6 +1,7 @@
 <?php
 namespace App\Models;
 use App\Models\Lecturer;
+use App\Models\Student;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -15,5 +16,8 @@ class Prodi extends Model
     {
         return $this->hasMany(Lecturer::class, 'prodi_id', 'id');
     }
-
+public function students()
+{
+    return $this->hasMany(Student::class);
+}
 }

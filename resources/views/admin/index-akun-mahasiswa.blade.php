@@ -68,6 +68,8 @@
                     <th class="py-3 pr-4 font-medium text-ink/50 font-mono text-xs uppercase tracking-wide">NPM</th>
                     <th class="py-3 pr-4 font-medium text-ink/50 font-mono text-xs uppercase tracking-wide">Nama Mahasiswa
                     </th>
+                    <th class="py-3 pr-4 font-medium text-ink/50 font-mono text-xs uppercase tracking-wide">Prodi</th>
+                    <th class="py-3 pr-4 font-medium text-ink/50 font-mono text-xs uppercase tracking-wide">Angkatan</th>
                     <th class="py-3 pr-4 font-medium text-ink/50 font-mono text-xs uppercase tracking-wide">email</th>
                     <th class="py-3 pr-4 font-medium text-ink/50 font-mono text-xs uppercase tracking-wide">Aksi</th>
                 </tr>
@@ -78,6 +80,8 @@
                         <td class="py-3 pr-4 font-mono text-xs text-ink/60">{{ $loop->iteration }}</td>
                         <td class="py-3 pr-4 font-medium">{{ $mk['nim'] }}</td>
                         <td class="py-3 pr-4 text-ink/70">{{ $mk->user->name }}</td>
+                        <td class="py-3 pr-4 text-ink/70">{{ $mk->prodi->nama_prodi }}</td>
+                        <td class="py-3 pr-4 text-ink/70">{{ $mk->angkatan }}</td>
                         <td class="py-3 pr-4 text-ink/70">{{ $mk->user->email }}</td>
                         <td class="py-3 pr-4">
                             <div class="flex items-center gap-2">
@@ -164,10 +168,10 @@
                 </div>
 
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-ink/70 mb-1">Semester</label>
-                    <input id="inputSemester" name="semester" type="number" required
+                    <label class="block text-sm font-medium text-ink/70 mb-1">Angkatan</label>
+                    <input id="inputSemester" name="angkatan" type="number" required
                         class="w-full border border-line rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal/40"
-                        placeholder="Masukkan semester">
+                        placeholder="Masukkan Tahun Masuk">
                 </div>
 
                 <div class="mb-4">

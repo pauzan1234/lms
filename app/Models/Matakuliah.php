@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Lecturer;
 
 class Matakuliah extends Model
 {
@@ -27,5 +28,17 @@ class Matakuliah extends Model
     public function prodi()
     {
         return $this->belongsTo(Prodi::class, 'prodi_id');
+    }
+
+    public function lecturers()
+    {
+        return $this->belongsToMany(
+            Lecturer::class,
+            'pengajaran',
+            'kode_mk',
+            'lecturer_id',
+            'kode_mk',
+            'id'
+        );
     }
 }

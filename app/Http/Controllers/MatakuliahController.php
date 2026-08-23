@@ -155,4 +155,20 @@ class MatakuliahController extends Controller
 
         return view('admin.dosen-pengampu', compact('prodiList'));
     }
+
+    public function search(Request $request)
+{
+    $keyword = $request->keyword;
+
+    $matakuliah = Matakuliah::query()
+        ->where('nama_mk', 'like', "%{$keyword}%")
+        ->orWhere('kode_mk', 'like', "%{$keyword}%")
+        ->limit(20)
+        ->get([
+            'kode_mk',
+            'nama_mk',
+        ]);
+
+    return response()->json($matakuliah);
+}
 }
