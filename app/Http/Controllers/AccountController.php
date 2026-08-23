@@ -158,15 +158,21 @@ class AccountController extends Controller
                 ->with('error', $errors);
         } catch (\Throwable $e) {
 
-            report($e);
+    report($e);
 
-            return redirect()
-                ->route('dosen.import')
-                ->with(
-                    'error',
-                    'Import gagal. Terjadi kesalahan saat memproses file Excel.'
-                );
-        }
+    return redirect()
+        ->route('dosen.import')
+        ->with('error', [
+            [
+                'row' => null,
+                'attribute' => null,
+                'errors' => [
+                    $e->getMessage(),
+                ],
+                'values' => [],
+            ],
+        ]);
+}
     }
 
     // ============================================================
@@ -174,16 +180,21 @@ class AccountController extends Controller
     // ============================================================
     public function index_mahasiswa()
     {
-        $prodi = Prodi::latest()
-            ->get();
+        $prodi = Prodi::latest()->get();
 
-        $akunmahasiswa = Student::with('user')
-            ->latest()
-            ->get();
+    $akunmahasiswa = Student::with([
+        'user',
+        'prodi'
+    ])
+    ->latest()
+    ->get();
 
-        // dd($akunmahasiswa);
+    return view(
+        'admin.index-akun-mahasiswa',
+        compact('prodi', 'akunmahasiswa')
+    );
 
-        return view('admin.index-akun-mahasiswa', compact('prodi', 'akunmahasiswa'));
+        
     }
 
     // ============================================================
@@ -227,7 +238,7 @@ class AccountController extends Controller
                 'string',
                 'max:255',
             ],
-            'semester' => [
+            'angkatan' => [
                 'required',
                 'string',
                 'max:4',
@@ -261,7 +272,7 @@ class AccountController extends Controller
                 'user_id' => $user->id,
                 'nim' => $validated['nim'],
                 'prodi_id' => $validated['prodi_id'],
-                'semester' => $validated['semester'],
+                'angkatan' => $validated['angkatan'],
                 'phone' => $validated['phone'] ?? null,
             ]);
         });

@@ -4,6 +4,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\MatakuliahController;
 use App\Http\Controllers\DosenController;
+use App\Http\Controllers\PengajaranController;
+
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -51,8 +53,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::post('/dosen', [AccountController::class, 'store'])
         ->name('admin.dosen.buatAkun');
 
-    Route::post('/admin/dosen/import', [AccountController::class, 'import'])
-        ->name('dosen.import.process');
+    Route::post('/dosen/import', [AccountController::class, 'import'])
+        ->name('admin.dosen.import.process');
+
 
     // ============================================================
     // PROSES TAMBAH AKUN MAHASISWA
@@ -63,10 +66,11 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::post('/mahasiswa/import', [AccountController::class, 'importStudent'])
         ->name('admin.mahasiswa.import.process');
 
+
     // ============================================================
-    // PROSES TAMBAH matkul
+    // PROSES TAMBAH MATAKULIAH
     // ============================================================
-    Route::post('/mahasiswa/import', [MatakuliahController::class, 'storeMatkul'])
+    Route::post('/matakuliah', [MatakuliahController::class, 'storeMatkul'])
         ->name('admin.tambah.matkul');
 });
 
@@ -84,5 +88,21 @@ Route::get('/penugasan_mk', [MatakuliahController::class, 'dosen_dan_mhs'])->nam
 
 Route::get('/dosen/{prodi}', [DosenController::class, 'show'])->name('dosen.prodi');
 
+Route::get(
+    '/matakuliah/search',
+    [MatakuliahController::class, 'search']
+)->name('admin.matakuliah.search');
+
+Route::post(
+    '/pengajaran',
+    [PengajaranController::class, 'store']
+)->name('admin.pengajaran.store');
+
+Route::get(
+    '/pengajaran/{lecturer}/matakuliah',
+    [PengajaranController::class, 'matakuliah']
+)->name('admin.pengajaran.matakuliah');
+
+Route::get('/kontrak_mk', [PengajaranController::class, 'index'])->name('dosen.prodi');
 
 require __DIR__ . '/auth.php';

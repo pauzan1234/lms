@@ -15,7 +15,7 @@ class Student extends Model
         'user_id',
         'nim',
         'prodi_id',
-        'semester',
+        'angkatan',
         'phone',
     ];
 
