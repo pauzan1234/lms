@@ -103,6 +103,16 @@ Route::get(
     [PengajaranController::class, 'matakuliah']
 )->name('admin.pengajaran.matakuliah');
 
-Route::get('/kontrak_mk', [PengajaranController::class, 'index'])->name('dosen.prodi');
+Route::get('/peserta_mk', [PengajaranController::class, 'show_mk'])->name('peserta.mk');
+
+Route::get(
+    '/admin/pengajaran/{pengajaran}/students',
+    [PengajaranController::class, 'searchStudents']
+)->name('admin.pengajaran.students.search');
+
+Route::post(
+    '/admin/pengajaran/{pengajaran}/peserta',
+    [PengajaranController::class, 'tambahPeserta']
+)->name('admin.pengajaran.peserta.store');
 
 require __DIR__ . '/auth.php';
