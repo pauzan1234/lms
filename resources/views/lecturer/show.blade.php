@@ -36,7 +36,7 @@ Kelola materi, tugas, kuis, dan aktivitas pembelajaran mahasiswa.
                         {{ $pengajaran->matakuliah->nama_mk }}
                     </h1>
 
-  
+
 
                 </div>
 
