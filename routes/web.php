@@ -115,4 +115,11 @@ Route::post(
     [PengajaranController::class, 'tambahPeserta']
 )->name('admin.pengajaran.peserta.store');
 
+
+Route::get('/matakuliahsaya', [PengajaranController::class, 'mk_saya'])
+    ->name('matakuliah.ampu');
+
+Route::get('/pengajaran/{id}', [PengajaranController::class, 'show'])
+    ->name('pengajaran.show');
+
 require __DIR__ . '/auth.php';
