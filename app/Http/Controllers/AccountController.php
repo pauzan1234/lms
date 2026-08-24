@@ -69,10 +69,9 @@ class AccountController extends Controller
 
             'prodi_id' => [
                 'required',
-                'string',
-                'max:255',
+                'integer',
+                'exists:prodi,id',
             ],
-
             'phone' => [
                 'nullable',
                 'string',
