@@ -163,4 +163,24 @@ class PengajaranController extends Controller
                 . ' mahasiswa berhasil ditambahkan.',
         ]);
     }
+    
+    public function mk_saya(
+    ){
+        $pengajaran = Pengajaran::with([
+            'lecturer',
+            'matakuliah'
+        ])->get();
+
+        return view('lecturer.matakuliah-saya', compact('pengajaran'));
+    }
+
+    public function show($id)
+    {
+        $pengajaran = Pengajaran::with([
+            'lecturer',
+            'matakuliah'
+        ])->findOrFail($id);
+
+        return view('lecturer.show', compact('pengajaran'));
+    }
 }
