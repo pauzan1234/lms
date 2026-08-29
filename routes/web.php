@@ -105,10 +105,7 @@ Route::get(
 
 Route::get('/peserta_mk', [PengajaranController::class, 'show_mk'])->name('peserta.mk');
 
-Route::get(
-    '/admin/pengajaran/{pengajaran}/students',
-    [PengajaranController::class, 'searchStudents']
-)->name('admin.pengajaran.students.search');
+
 
 Route::post(
     '/admin/pengajaran/{pengajaran}/peserta',
@@ -121,5 +118,24 @@ Route::get('/matakuliahsaya', [PengajaranController::class, 'mk_saya'])
 
 Route::get('/pengajaran/{id}', [PengajaranController::class, 'show'])
     ->name('pengajaran.show');
+Route::get(
+    '/kelas/{kelas}/students',
+    [PengajaranController::class, 'searchStudents']
+)->name('kelas.students.search');
+
+Route::get(
+    '/kelas/{kelas}/students',
+    [PengajaranController::class, 'searchStudents']
+)->name('kelas.students');
+
+Route::post(
+    '/kelas/{kelas}/peserta',
+    [PengajaranController::class, 'tambahPeserta']
+)->name('kelas.peserta.store');
+
+Route::get(
+    '/kelas/{kelas}/peserta',
+    [PengajaranController::class, 'daftarPeserta']
+)->name('kelas.peserta');
 
 require __DIR__ . '/auth.php';

@@ -14,8 +14,8 @@ return new class extends Migration
     Schema::create('pengajaran_mahasiswa', function (Blueprint $table) {
         $table->id();
 
-        $table->foreignId('pengajaran_id')
-            ->constrained('pengajaran')
+        $table->foreignId('kelas_id')
+            ->constrained('kelas')
             ->cascadeOnDelete();
 
         $table->foreignId('mahasiswa_id')
@@ -24,7 +24,7 @@ return new class extends Migration
 
         $table->timestamps();
 
-        $table->unique(['pengajaran_id', 'mahasiswa_id']);
+        $table->unique(['kelas_id', 'mahasiswa_id']);
     });
 }
 
