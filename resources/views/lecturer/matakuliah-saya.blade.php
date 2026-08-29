@@ -27,7 +27,7 @@ Daftar Mata Kuliah
         {{-- Card Mata Kuliah --}}
         <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
 
-            @forelse ($pengajaran as $item)
+            @forelse ($kelas as $item)
 
             <a href="{{ route('pengajaran.show', $item->id) }}"
                 class="group relative overflow-hidden rounded-2xl border border-line bg-white shadow-sm

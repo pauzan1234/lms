@@ -85,7 +85,7 @@ class PengajaranController extends Controller
                     return [
                         'success' => false,
                         'message' =>
-                            'Dosen tersebut sudah terdaftar pada kelas ini.',
+                        'Dosen tersebut sudah terdaftar pada kelas ini.',
                     ];
                 }
 
@@ -102,22 +102,20 @@ class PengajaranController extends Controller
                 return [
                     'success' => true,
                     'message' =>
-                        'Mata kuliah berhasil ditambahkan.',
+                    'Mata kuliah berhasil ditambahkan.',
                 ];
             });
 
 
             return response()->json($hasil);
-
-
         } catch (\Exception $e) {
 
             return response()->json([
                 'success' => false,
                 'message' =>
-                    'Gagal menyimpan data.',
+                'Gagal menyimpan data.',
                 'error' =>
-                    $e->getMessage(),
+                $e->getMessage(),
             ], 500);
         }
     }
@@ -145,36 +143,34 @@ class PengajaranController extends Controller
                 return [
 
                     'kelas_id' =>
-                        $item->kelas->id,
+                    $item->kelas->id,
 
                     'kode_mk' =>
-                        $item->kelas->matakuliah->kode_mk,
+                    $item->kelas->matakuliah->kode_mk,
 
                     'nama_mk' =>
-                        $item->kelas->matakuliah->nama_mk,
+                    $item->kelas->matakuliah->nama_mk,
 
                     'sks' =>
-                        $item->kelas->matakuliah->sks,
+                    $item->kelas->matakuliah->sks,
 
                     'kode_kelas' =>
-                        $item->kelas->kode_kelas,
+                    $item->kelas->kode_kelas,
 
                 ];
             });
 
 
             return response()->json($data);
-
-
         } catch (\Exception $e) {
 
             return response()->json([
 
                 'message' =>
-                    'Gagal mengambil data mata kuliah.',
+                'Gagal mengambil data mata kuliah.',
 
                 'error' =>
-                    $e->getMessage(),
+                $e->getMessage(),
 
             ], 500);
         }
@@ -216,91 +212,86 @@ class PengajaranController extends Controller
     */
 
     public function searchStudents(Request $request, Kelas $kelas)
-{
-    try {
+    {
+        try {
 
-        $search = trim($request->get('search', ''));
+            $search = trim($request->get('search', ''));
 
-        $students = Student::with([
-            'user',
-            'prodi'
-        ])
-            ->when($search, function ($query) use ($search) {
+            $students = Student::with([
+                'user',
+                'prodi'
+            ])
+                ->when($search, function ($query) use ($search) {
 
-                $query->where(function ($q) use ($search) {
+                    $query->where(function ($q) use ($search) {
 
-                    $q->where('nim', 'like', "%{$search}%")
-                        ->orWhereHas('user', function ($user) use ($search) {
+                        $q->where('nim', 'like', "%{$search}%")
+                            ->orWhereHas('user', function ($user) use ($search) {
 
-                            $user->where(
-                                'name',
-                                'like',
-                                "%{$search}%"
-                            );
+                                $user->where(
+                                    'name',
+                                    'like',
+                                    "%{$search}%"
+                                );
+                            });
+                    });
+                })
+                ->orderBy('nim')
+                ->limit(20)
+                ->get();
 
-                        });
+            return response()->json($students);
+        } catch (\Exception $e) {
 
-                });
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengambil data mahasiswa.',
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
+    }
 
+    public function tambahPeserta(Request $request, Kelas $kelas)
+    {
+        $request->validate([
+            'student_ids' => [
+                'required',
+                'array',
+                'min:1',
+            ],
+
+            'student_ids.*' => [
+                'integer',
+                'exists:students,id',
+            ],
+        ]);
+
+        $pengajaran = Kelas::where(
+            'id',
+            $kelas->id
+        )->firstOrFail();
+
+        $data = collect($request->student_ids)
+            ->unique()
+            ->map(function ($studentId) use ($pengajaran) {
+
+                return [
+                    'kelas_id' => $pengajaran->id,
+                    'mahasiswa_id' => $studentId,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
             })
-            ->orderBy('nim')
-            ->limit(20)
-            ->get();
+            ->toArray();
 
-        return response()->json($students);
-
-    } catch (\Exception $e) {
+        PengajaranMahasiswa::insertOrIgnore($data);
 
         return response()->json([
-            'success' => false,
-            'message' => 'Gagal mengambil data mahasiswa.',
-            'error'   => $e->getMessage(),
-        ], 500);
+            'success' => true,
+            'message' => count($data)
+                . ' mahasiswa berhasil ditambahkan.',
+        ]);
     }
-}
-
-public function tambahPeserta(Request $request, Kelas $kelas)
-{
-    $request->validate([
-        'student_ids' => [
-            'required',
-            'array',
-            'min:1',
-        ],
-
-        'student_ids.*' => [
-            'integer',
-            'exists:students,id',
-        ],
-    ]);
-
-    $pengajaran = Kelas::where(
-        'id',
-        $kelas->id
-    )->firstOrFail();
-
-    $data = collect($request->student_ids)
-        ->unique()
-        ->map(function ($studentId) use ($pengajaran) {
-
-            return [
-                'kelas_id' => $pengajaran->id,
-                'mahasiswa_id' => $studentId,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
-
-        })
-        ->toArray();
-
-    PengajaranMahasiswa::insertOrIgnore($data);
-
-    return response()->json([
-        'success' => true,
-        'message' => count($data)
-            . ' mahasiswa berhasil ditambahkan.',
-    ]);
-}
     /*
     |--------------------------------------------------------------------------
     | MATA KULIAH SAYA
@@ -309,15 +300,15 @@ public function tambahPeserta(Request $request, Kelas $kelas)
 
     public function mk_saya()
     {
-        $pengajaran = Pengajaran::with([
-            'lecturer',
+        $kelas = Kelas::with([
+            'pengajaranDosen.lecturer', //ambil fungsi lecturer dari pengajaranDosen
             'matakuliah'
         ])->get();
 
 
         return view(
             'lecturer.matakuliah-saya',
-            compact('pengajaran')
+            compact('kelas')
         );
     }
 
@@ -343,29 +334,28 @@ public function tambahPeserta(Request $request, Kelas $kelas)
         );
     }
 
- public function daftarPeserta(Kelas $kelas)
-{
-    try {
+    public function daftarPeserta(Kelas $kelas)
+    {
+        try {
 
-        $peserta = PengajaranMahasiswa::with([
-            'student.user',
-            'student.prodi',
-        ])
-        ->where('kelas_id', $kelas->id)
-        ->get();
+            $peserta = PengajaranMahasiswa::with([
+                'student.user',
+                'student.prodi',
+            ])
+                ->where('kelas_id', $kelas->id)
+                ->get();
 
-        return response()->json([
-            'success' => true,
-            'data' => $peserta,
-        ]);
+            return response()->json([
+                'success' => true,
+                'data' => $peserta,
+            ]);
+        } catch (\Exception $e) {
 
-    } catch (\Exception $e) {
-
-        return response()->json([
-            'success' => false,
-            'message' => 'Gagal mengambil daftar peserta.',
-            'error' => $e->getMessage(),
-        ], 500);
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengambil daftar peserta.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
-}
 }
