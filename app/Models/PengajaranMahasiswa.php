@@ -3,21 +3,23 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Kelas;
+
 
 class PengajaranMahasiswa extends Model
 {
     protected $table = 'pengajaran_mahasiswa';
 
     protected $fillable = [
-        'pengajaran_id',
+        'kelas_id',
         'mahasiswa_id',
     ];
 
-    public function pengajaran()
+    public function kelas()
     {
         return $this->belongsTo(
-            Pengajaran::class,
-            'pengajaran_id'
+            Kelas::class,
+            'kelas_id',
         );
     }
 
