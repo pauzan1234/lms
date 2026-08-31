@@ -1,11 +1,14 @@
 @extends('lecturer.app-lecturer')
 
 @section('ketjudul')
-Mata Kuliah
+Mata Kuliah oleh
+@foreach ($pengajaran->pengajaranDosen as $pj)
+{{ $pj->lecturer->user->name }}
+@endforeach
 @endsection
 
 @section('judul')
-Kelola materi, tugas, kuis, dan aktivitas pembelajaran mahasiswa.
+{{ $pengajaran->matakuliah->nama_mk }}
 @endsection
 
 @section('content')
@@ -15,42 +18,19 @@ Kelola materi, tugas, kuis, dan aktivitas pembelajaran mahasiswa.
     {{-- =========================================================
         HEADER MATA KULIAH
     ========================================================== --}}
-    <div class="border-b border-line bg-white">
-
-        <div class="mx-auto max-w-7xl px-6 py-8">
-
-            <div class="flex flex-col justify-between gap-6 md:flex-row md:items-end">
-
-                <div>
-
-                    {{-- Label --}}
-                    <div class="mb-3">
-                        <span
-                            class="font-mono text-[11px] font-medium uppercase tracking-[0.15em] text-ink/45">
-                            Mata Kuliah
-                        </span>
-                    </div>
-
-                    {{-- Nama Mata Kuliah --}}
-                    <h1 class="font-display text-3xl font-semibold tracking-tight text-ink">
-                        {{ $pengajaran->matakuliah->nama_mk }}
-                    </h1>
-
-
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
 
 
     {{-- =========================================================
         MAIN CONTENT
     ========================================================== --}}
     <div class="mx-auto max-w-7xl px-6 py-8">
+
+        {{-- Notifikasi sukses (hapus, tambah, dll) --}}
+        @if (session('success'))
+        <div class="mb-6 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+            {{ session('success') }}
+        </div>
+        @endif
 
         <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
 
@@ -94,7 +74,12 @@ Kelola materi, tugas, kuis, dan aktivitas pembelajaran mahasiswa.
                                    transition hover:bg-paper hover:text-ink">
                             Mahasiswa
                         </a>
-
+                        {{-- Absensi --}}
+                        <a href="#absensi"
+                            class="rounded-lg px-4 py-2.5 text-sm font-medium text-ink/60
+                                   transition hover:bg-paper hover:text-ink">
+                            Absensi
+                        </a>
                     </div>
 
                 </div>
@@ -104,7 +89,7 @@ Kelola materi, tugas, kuis, dan aktivitas pembelajaran mahasiswa.
                     MATERI
                 ================================================== --}}
                 <div id="materi"
-                    class="overflow-hidden rounded-2xl border border-line bg-white shadow-sm">
+                    class="rounded-2xl border border-line bg-white shadow-sm">
 
                     {{-- Header Materi --}}
                     <div
@@ -125,8 +110,7 @@ Kelola materi, tugas, kuis, dan aktivitas pembelajaran mahasiswa.
 
 
                         {{-- Tambah Materi --}}
-                        <button
-                            type="button"
+                        <a href="{{ route('lecturer.materi.create', $pengajaranDosen->id) }}"
                             class="inline-flex items-center justify-center gap-2 rounded-lg
                                    bg-ink px-4 py-2.5 text-sm font-semibold text-white
                                    transition hover:bg-primaryDark">
@@ -145,148 +129,233 @@ Kelola materi, tugas, kuis, dan aktivitas pembelajaran mahasiswa.
 
                             Tambah Materi
 
-                        </button>
+                        </a>
 
                     </div>
 
 
                     {{-- =================================================
-                        LIST MATERI
+                        LIST MATERI (dari database, dengan embed player)
                     ================================================== --}}
                     <div class="divide-y divide-line">
 
+                        @forelse ($materiList as $materi)
 
-                        {{-- Materi 1 --}}
-                        <div class="flex items-center gap-4 p-5">
+                        {{-- Label tipe konten yang dimiliki materi ini, misal "PDF, Video" --}}
+                        @php
+                        $labelTipe = $materi->files->map(function ($file) {
+                        return match ($file->tipe) {
+                        'pdf' => 'PDF',
+                        'audio' => 'Audio',
+                        'video_youtube' => 'Video',
+                        default => ucfirst($file->tipe),
+                        };
+                        })->unique()->implode(', ');
+                        @endphp
 
-                            {{-- Icon --}}
-                            <div
-                                class="flex h-11 w-11 shrink-0 items-center justify-center
-                                       rounded-xl bg-paper text-ink">
+                        <div x-data="{ open: false }">
 
-                                <svg class="h-5 w-5"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24">
+                            {{-- Header (klik untuk expand/collapse) --}}
+                            <div class="flex items-center gap-4 p-5">
 
-                                    <path stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5
-                                           S4.168 5.477 3 6.253v13
-                                           C4.168 18.477 5.754 18 7.5 18
-                                           s3.332.477 4.5 1.253
-                                           m0-13C13.168 5.477 14.754 5
-                                           16.5 5c1.746 0 3.332.477 4.5 1.253v13
-                                           C19.832 18.477 18.246 18 16.5 18
-                                           c-1.746 0-3.332.477-4.5 1.253" />
+                                <button type="button" @click="open = !open"
+                                    class="flex flex-1 items-center gap-4 text-left min-w-0">
 
-                                </svg>
+                                    {{-- Icon --}}
+                                    <div
+                                        class="flex h-11 w-11 shrink-0 items-center justify-center
+                                               rounded-xl bg-paper text-ink">
+
+                                        <svg class="h-5 w-5"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24">
+
+                                            <path stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5
+                                                   S4.168 5.477 3 6.253v13
+                                                   C4.168 18.477 5.754 18 7.5 18
+                                                   s3.332.477 4.5 1.253
+                                                   m0-13C13.168 5.477 14.754 5
+                                                   16.5 5c1.746 0 3.332.477 4.5 1.253v13
+                                                   C19.832 18.477 18.246 18 16.5 18
+                                                   c-1.746 0-3.332.477-4.5 1.253" />
+
+                                        </svg>
+
+                                    </div>
+
+
+                                    {{-- Informasi --}}
+                                    <div class="min-w-0 flex-1">
+
+                                        <h3 class="truncate text-sm font-semibold text-ink">
+                                            {{ $materi->judul }}
+                                        </h3>
+
+                                        <p class="mt-1 text-xs text-ink/50">
+                                            Materi pembelajaran
+                                            @if ($labelTipe)
+                                            • {{ $labelTipe }}
+                                            @endif
+                                        </p>
+
+                                    </div>
+
+                                    {{-- Chevron indikator expand --}}
+                                    <svg class="h-4 w-4 shrink-0 text-ink/30 transition-transform"
+                                        :class="open ? 'rotate-180' : ''"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+
+                                </button>
+
+
+                                {{-- Menu --}}
+                                <div class="relative shrink-0" x-data="{ menuOpen: false }">
+
+                                    <button type="button"
+                                        @click="menuOpen = !menuOpen"
+                                        @click.outside="menuOpen = false"
+                                        class="rounded-lg p-2 text-ink/35
+                                               transition hover:bg-paper hover:text-ink">
+
+                                        <svg class="h-5 w-5"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24">
+
+                                            <path stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M12 5v.01M12 12v.01M12 19v.01" />
+
+                                        </svg>
+
+                                    </button>
+
+                                    <div x-show="menuOpen" x-cloak
+                                        class="absolute right-0 z-10 mt-1 w-40 rounded-lg border
+                                               border-line bg-white py-1 shadow-lg">
+
+                                        <a href="{{ route('lecturer.materi.edit', $materi->id) }}"
+                                            class="block w-full px-4 py-2 text-left text-sm
+                                                   text-ink/70 hover:bg-paper">
+                                            Edit
+                                        </a>
+
+                                        <form method="POST"
+                                            action="{{ route('lecturer.materi.destroy', $materi->id) }}"
+                                            onsubmit="return confirm('Yakin ingin menghapus materi ini?')">
+                                            @csrf
+                                            @method('DELETE')
+
+                                            <button type="submit"
+                                                class="block w-full px-4 py-2 text-left text-sm
+                                                       text-red-600 hover:bg-red-50">
+                                                Hapus
+                                            </button>
+                                        </form>
+
+                                    </div>
+
+                                </div>
 
                             </div>
 
 
-                            {{-- Informasi --}}
-                            <div class="min-w-0 flex-1">
+                            {{-- Body: konten embed (PDF, audio, video) --}}
+                            <div x-show="open" x-cloak class="space-y-5 px-5 pb-5">
 
-                                <h3 class="truncate text-sm font-semibold text-ink">
-                                    Pertemuan 1 — Pengenalan HTML
-                                </h3>
+                                @if ($materi->deskripsi)
+                                <div class="prose prose-sm max-w-none text-sm text-ink/60">
+                                    {!! $materi->deskripsi !!}
+                                </div>
+                                @endif
 
-                                <p class="mt-1 text-xs text-ink/50">
-                                    Materi pembelajaran • PDF
+                                @foreach ($materi->files as $file)
+
+                                @if ($file->tipe === 'pdf')
+
+                                {{-- Embed PDF --}}
+                                <div>
+                                    <div class="mb-2 flex items-center justify-between">
+                                        <span class="text-xs font-medium text-ink/50">
+                                            {{ $file->nama_asli ?? 'Dokumen PDF' }}
+                                        </span>
+                                        <a href="{{ $file->url }}" target="_blank"
+                                            class="text-xs font-medium text-blue-600 hover:underline">
+                                            Buka di tab baru
+                                        </a>
+                                    </div>
+
+                                    <iframe src="{{ $file->url }}"
+                                        class="h-[480px] w-full rounded-xl border border-line"
+                                        loading="lazy"></iframe>
+                                </div>
+
+                                @elseif ($file->tipe === 'audio')
+
+                                {{-- Embed Audio Player --}}
+                                <div>
+                                    <p class="mb-2 text-xs font-medium text-ink/50">
+                                        {{ $file->nama_asli ?? 'Rekaman Audio' }}
+                                    </p>
+
+                                    <audio controls class="w-full">
+                                        <source src="{{ $file->url }}">
+                                        Browser kamu tidak mendukung pemutar audio.
+                                    </audio>
+                                </div>
+
+                                @elseif ($file->tipe === 'video_youtube' && $file->youtube_embed_url)
+
+                                {{-- Embed Video YouTube --}}
+                                <div>
+                                    <p class="mb-2 text-xs font-medium text-ink/50">
+                                        Video Pembelajaran
+                                    </p>
+
+                                    <div class="aspect-video w-full overflow-hidden rounded-xl border border-line">
+                                        <iframe
+                                            src="{{ $file->youtube_embed_url }}"
+                                            class="h-full w-full"
+                                            loading="lazy"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowfullscreen></iframe>
+                                    </div>
+                                </div>
+
+                                @endif
+
+                                @endforeach
+
+                            </div>
+
+                        </div>
+
+                        @empty
+
+                        {{-- Empty State --}}
+                        <div class="p-6">
+
+                            <div
+                                class="rounded-xl border border-dashed border-line
+                                       bg-paper p-8 text-center">
+
+                                <p class="text-sm text-ink/50">
+                                    Belum ada materi. Klik "Tambah Materi" untuk mulai menambahkan.
                                 </p>
 
                             </div>
 
-
-                            {{-- Menu --}}
-                            <button
-                                class="rounded-lg p-2 text-ink/35
-                                       transition hover:bg-paper hover:text-ink">
-
-                                <svg class="h-5 w-5"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24">
-
-                                    <path stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M12 5v.01M12 12v.01M12 19v.01" />
-
-                                </svg>
-
-                            </button>
-
                         </div>
 
-
-                        {{-- Materi 2 --}}
-                        <div class="flex items-center gap-4 p-5">
-
-                            {{-- Icon --}}
-                            <div
-                                class="flex h-11 w-11 shrink-0 items-center justify-center
-                                       rounded-xl bg-paper text-ink">
-
-                                <svg class="h-5 w-5"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24">
-
-                                    <path stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5
-                                           S4.168 5.477 3 6.253v13
-                                           C4.168 18.477 5.754 18 7.5 18
-                                           s3.332.477 4.5 1.253
-                                           m0-13C13.168 5.477 14.754 5
-                                           16.5 5c1.746 0 3.332.477 4.5 1.253v13
-                                           C19.832 18.477 18.246 18 16.5 18
-                                           c-1.746 0-3.332.477-4.5 1.253" />
-
-                                </svg>
-
-                            </div>
-
-
-                            {{-- Informasi --}}
-                            <div class="min-w-0 flex-1">
-
-                                <h3 class="truncate text-sm font-semibold text-ink">
-                                    Pertemuan 2 — CSS Dasar
-                                </h3>
-
-                                <p class="mt-1 text-xs text-ink/50">
-                                    Materi pembelajaran • PDF
-                                </p>
-
-                            </div>
-
-
-                            {{-- Menu --}}
-                            <button
-                                class="rounded-lg p-2 text-ink/35
-                                       transition hover:bg-paper hover:text-ink">
-
-                                <svg class="h-5 w-5"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24">
-
-                                    <path stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M12 5v.01M12 12v.01M12 19v.01" />
-
-                                </svg>
-
-                            </button>
-
-                        </div>
-
+                        @endforelse
 
                     </div>
 
@@ -345,7 +414,57 @@ Kelola materi, tugas, kuis, dan aktivitas pembelajaran mahasiswa.
 
                 </div>
 
+                {{-- =================================================
+                    ABSENSI
+                ================================================== --}}
+                <div id="absensi"
+                    class="mt-8 overflow-hidden rounded-2xl border border-line bg-white shadow-sm">
 
+                    {{-- Header --}}
+                    <div
+                        class="flex flex-col justify-between gap-4 border-b border-line p-6
+                               sm:flex-row sm:items-center">
+
+                        <div>
+
+                            <h2 class="font-display text-lg font-semibold text-ink">
+                                Absensi
+                            </h2>
+
+                            <p class="mt-1 text-sm text-ink/50">
+                                Kelola kehadiran mahasiswa per pertemuan.
+                            </p>
+
+                        </div>
+
+
+                        <button
+                            class="rounded-lg bg-ink px-4 py-2.5 text-sm font-semibold text-white
+                                   transition hover:bg-primaryDark">
+
+                            + Buka Absensi
+
+                        </button>
+
+                    </div>
+
+
+                    {{-- Empty State --}}
+                    <div class="p-6">
+
+                        <div
+                            class="rounded-xl border border-dashed border-line
+                                   bg-paper p-8 text-center">
+
+                            <p class="text-sm text-ink/50">
+                                Belum ada sesi absensi untuk mata kuliah ini.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
             </div>
 
 
@@ -369,7 +488,7 @@ Kelola materi, tugas, kuis, dan aktivitas pembelajaran mahasiswa.
 
 
                         {{-- Tambah Materi --}}
-                        <button
+                        <a href="{{ route('lecturer.materi.create', $pengajaranDosen->id) }}"
                             class="flex w-full items-center gap-3 rounded-xl border border-line
                                    p-3 text-left transition hover:bg-paper">
 
@@ -393,7 +512,7 @@ Kelola materi, tugas, kuis, dan aktivitas pembelajaran mahasiswa.
 
                             </div>
 
-                        </button>
+                        </a>
 
 
                         {{-- Tambah Tugas --}}
@@ -477,7 +596,7 @@ Kelola materi, tugas, kuis, dan aktivitas pembelajaran mahasiswa.
                             </span>
 
                             <span class="font-semibold text-ink">
-                                2
+                                {{ $materiList->count() }}
                             </span>
 
                         </div>

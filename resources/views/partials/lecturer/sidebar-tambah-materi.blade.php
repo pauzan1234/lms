@@ -75,62 +75,7 @@
      </a>
    </div>
 
-   <!-- Kursus yang sedang dibuka -->
-   <div>
-     <button @click="courseOpen = !courseOpen" class="w-full flex items-center gap-2 px-3 mb-2 text-[11px] font-mono uppercase tracking-wider text-paper/40">
-       <span>Sedang Dibuka</span>
-       <svg :class="courseOpen ? 'rotate-90' : ''" class="ml-auto transition-transform" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6">
-         <path d="M4 2l4 4-4 4" />
-       </svg>
-     </button>
 
-     <div x-show="courseOpen" x-cloak class="rounded-xl bg-white/5 border border-white/10 p-3">
-
-       <p class="text-sm font-medium leading-snug">
-         {{ $pengajaran->matakuliah->nama_mk }}
-       </p>
-
-       <p class="text-[11px] text-paper/40 font-mono mt-0.5 mb-3">
-         {{ $pengajaran->matakuliah->nama_mk ?? '-' }}
-
-         · {{ $pengajaran->matakuliah->sks ?? '-' }} SKS
-       </p>
-
-       <ol class="space-y-0.5">
-
-         @forelse ($materiList as $materi)
-         <li>
-           <a href="#materi-{{ $materi->id }}"
-             class="flex items-center gap-2.5 px-2 py-1.5 rounded-md text-paper/60
-                       hover:bg-white/5 hover:text-paper text-[13px] transition-colors">
-
-             <span class="w-4 h-4 rounded-full border border-white/20 shrink-0"></span>
-
-             {{ $materi->judul }}
-
-           </a>
-         </li>
-         @empty
-         <li class="px-2 py-1.5 text-[13px] text-paper/30">
-           Belum ada materi.
-         </li>
-         @endforelse
-
-       </ol>
-
-       @if ($materiList->isNotEmpty())
-       <div class="mt-3 pt-3 border-t border-white/10">
-         <div class="flex items-center justify-between text-[11px] text-paper/40 mb-1.5 font-mono">
-           <span>PROGRES</span><span>0%</span>
-         </div>
-         <div class="h-1.5 bg-white/10 rounded-full overflow-hidden">
-           <div class="h-full bg-amber rounded-full" style="width:0%"></div>
-         </div>
-       </div>
-       @endif
-
-     </div>
-   </div>
 
  </nav>
 
