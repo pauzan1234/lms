@@ -67,7 +67,7 @@
         <aside
             :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
             class="fixed lg:sticky top-0 left-0 h-screen w-72 shrink-0 bg-ink text-paper z-40 flex flex-col transition-transform duration-200">
-            @include('partials.lecturer.sidebar')
+            @include('partials.lecturer.sidebar-tambah-materi')
 
         </aside>
 
@@ -159,6 +159,9 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
+    {{-- Tempat menampung JS tambahan dari halaman anak, misal script Quill --}}
+    @stack('scripts')
 </body>
 
 </html>

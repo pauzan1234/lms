@@ -10,6 +10,7 @@ use App\Models\Student;
 use App\Models\Kelas;
 use App\Models\PengajaranDosen;
 use App\Models\PengajaranMahasiswa;
+use Illuminate\Support\Facades\Auth;
 
 class PengajaranController extends Controller
 {
@@ -319,21 +320,54 @@ class PengajaranController extends Controller
     |--------------------------------------------------------------------------
     */
 
+
+
     public function show($id)
     {
-        $pengajaran = Pengajaran::with([
-            'lecturer',
+        $kelas = Kelas::with([
+            'pengajaranDosen.lecturer.user', // untuk daftar nama dosen pengampu, ditampilkan di @section('ketjudul')
             'matakuliah'
         ])
-            ->findOrFail($id);
+            ->findOrFail($id); // id kelas
 
+        // Cari dosen yang sedang login
+        $lecturer = Auth::user()->lecturer;
+
+        if (!$lecturer) {
+            abort(403, 'Akun ini tidak terdaftar sebagai dosen.');
+        }
+
+        // Cari record pengajaran_dosen milik dosen ini untuk kelas ini
+        $pengajaranDosen = PengajaranDosen::with([
+            'materi.files' => function ($query) {
+                $query->orderBy('urutan');
+            }
+        ])
+            ->where('kelas_id', $kelas->id)
+            ->where('dosen_id', $lecturer->id)
+            ->first();
+
+        if (!$pengajaranDosen) {
+            // dosen ini tidak mengajar di kelas ini, jangan izinkan akses
+            abort(403, 'Anda tidak mengajar di kelas ini.');
+        }
+
+        // urutkan materi terbaru di atas (opsional, sesuaikan selera)
+        $materiList = $pengajaranDosen->materi()
+            ->with('files')
+            ->orderBy('urutan')
+            ->orderByDesc('created_at')
+            ->get();
 
         return view(
             'lecturer.show',
-            compact('pengajaran')
+            [
+                'pengajaran' => $kelas,               // dipakai untuk info kelas & mata kuliah
+                'pengajaranDosen' => $pengajaranDosen, // dipakai untuk link Tambah Materi
+                'materiList' => $materiList,           // dipakai untuk render daftar materi
+            ]
         );
     }
-
     public function daftarPeserta(Kelas $kelas)
     {
         try {
@@ -357,5 +391,15 @@ class PengajaranController extends Controller
                 'error' => $e->getMessage(),
             ], 500);
         }
+    }
+    public function destroy($id)
+    {
+        $kelas = Kelas::findOrFail($id);
+        $kelas->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Kelas berhasil dihapus'
+        ]);
     }
 }

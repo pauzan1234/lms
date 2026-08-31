@@ -5,7 +5,7 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\MatakuliahController;
 use App\Http\Controllers\DosenController;
 use App\Http\Controllers\PengajaranController;
-
+use App\Http\Controllers\MateriController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -137,5 +137,31 @@ Route::get(
     '/kelas/{kelas}/peserta',
     [PengajaranController::class, 'daftarPeserta']
 )->name('kelas.peserta');
+
+// routes/web.php
+Route::delete('/kelas/{id}', [PengajaranController::class, 'destroy'])->name('kelas.destroy');
+
+
+
+Route::prefix('lecturer')->name('lecturer.')->group(function () {
+
+    // Form tambah materi (untuk pengajaran tertentu)
+    Route::get('/pengajaran/{pengajaran}/materi/create', [MateriController::class, 'create'])
+        ->name('materi.create');
+
+    // Simpan materi baru
+    Route::post('/pengajaran/{pengajaran}/materi', [MateriController::class, 'store'])
+        ->name('materi.store');
+    // Form edit materi
+    Route::get('/materi/{materi}/edit', [MateriController::class, 'edit'])
+        ->name('materi.edit');
+
+    // Update materi
+    Route::put('/materi/{materi}', [MateriController::class, 'update'])
+        ->name('materi.update');
+    // Hapus materi
+    Route::delete('/materi/{materi}', [MateriController::class, 'destroy'])
+        ->name('materi.destroy');
+});
 
 require __DIR__ . '/auth.php';
