@@ -321,8 +321,8 @@ class PengajaranController extends Controller
 
     public function show($id)
     {
-        $pengajaran = Pengajaran::with([
-            'lecturer',
+        $pengajaran = Kelas::with([
+            'pengajaranDosen.lecturer',
             'matakuliah'
         ])
             ->findOrFail($id);
