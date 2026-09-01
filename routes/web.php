@@ -1,11 +1,14 @@
 <?php
 
+use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\MatakuliahController;
 use App\Http\Controllers\DosenController;
 use App\Http\Controllers\PengajaranController;
 use App\Http\Controllers\MateriController;
+use App\Http\Controllers\SesiAbsensiController;
+use App\Models\Absensi;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -164,4 +167,31 @@ Route::prefix('lecturer')->name('lecturer.')->group(function () {
         ->name('materi.destroy');
 });
 
+// =========================================================
+// DOSEN — kelola sesi absensi
+// =========================================================
+Route::middleware('auth')->prefix('lecturer')->name('lecturer.')->group(function () {
+
+    Route::post('pengajaran/{pengajaran}/absensi', [SesiAbsensiController::class, 'store'])
+        ->name('absensi.store');
+
+    Route::get('absensi/{sesi}', [SesiAbsensiController::class, 'show'])
+        ->name('absensi.show');
+
+    Route::post('absensi/{sesi}/tutup', [SesiAbsensiController::class, 'tutup'])
+        ->name('absensi.tutup');
+
+    Route::get('absensi/{sesi}/count', [SesiAbsensiController::class, 'count'])
+        ->name('absensi.count');
+
+    Route::get('absensi/{sesi}/rekap', [SesiAbsensiController::class, 'rekap'])
+        ->name('absensi.rekap');
+});
+
+// =========================================================
+// MAHASISWA — scan QR absensi
+// =========================================================
+Route::get('absensi/scan/{token}', [AbsensiController::class, 'scan'])
+    ->middleware('auth')
+    ->name('mahasiswa.absensi.scan');
 require __DIR__ . '/auth.php';
