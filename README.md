@@ -314,3 +314,16 @@ git push origin main
 ```
 
 > **Catatan:** Jangan memasukkan file `.env` ke GitHub karena file tersebut biasanya berisi konfigurasi database, password, API key, dan informasi sensitif lainnya. Pastikan `.env` sudah tercantum di `.gitignore`.
+
+## Install maatwebsite/excel.
+
+aplikasi ini menggunakan file excel sebagai templating, maka perlu dilakukan instalasi maatwebsite/excel, caranya:
+
+```bash
+composer require maatwebsite/excel
+```
+
+kalau error, pstikan di composer.json seperti ini:
+```bash
+"maatwebsite/excel": "^3.1",
+```
