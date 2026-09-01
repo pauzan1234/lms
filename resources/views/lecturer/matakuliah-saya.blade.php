@@ -1,4 +1,4 @@
-@extends('lecturer.app-lecturer')
+@extends('lecturer.app-lecturer-create-materi')
 @section('ketjudul')
 Dashboard
 @endsection

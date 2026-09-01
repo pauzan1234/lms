@@ -10,6 +10,7 @@ use App\Models\Student;
 use App\Models\Kelas;
 use App\Models\PengajaranDosen;
 use App\Models\PengajaranMahasiswa;
+use Illuminate\Support\Facades\Auth;
 
 class PengajaranController extends Controller
 {
@@ -319,18 +320,51 @@ class PengajaranController extends Controller
     |--------------------------------------------------------------------------
     */
 
+
+
     public function show($id)
     {
-        $pengajaran = Kelas::with([
-            'pengajaranDosen.lecturer',
+        $kelas = Kelas::with([
+            'pengajaranDosen.lecturer.user',
             'matakuliah'
         ])
             ->findOrFail($id);
 
+        // Cari dosen yang sedang login
+        $lecturer = Auth::user()->lecturer;
+
+        if (!$lecturer) {
+            abort(403, 'Akun ini tidak terdaftar sebagai dosen.');
+        }
+
+        // Cari record pengajaran_dosen milik dosen ini untuk kelas ini
+        $pengajaranDosen = PengajaranDosen::with([
+            'materi.files' => function ($query) {
+                $query->orderBy('urutan');
+            }
+        ])
+            ->where('kelas_id', $kelas->id)
+            ->where('dosen_id', $lecturer->id)
+            ->first();
+
+        if (!$pengajaranDosen) {
+            abort(403, 'Anda tidak mengajar di kelas ini.');
+        }
+
+        // Ambil materi
+        $materiList = $pengajaranDosen->materi()
+            ->with('files')
+            ->orderBy('urutan')
+            ->orderByDesc('created_at')
+            ->get();
 
         return view(
             'lecturer.show',
-            compact('pengajaran')
+            [
+                'pengajaran' => $kelas,
+                'pengajaranDosen' => $pengajaranDosen,
+                'materiList' => $materiList,
+            ]
         );
     }
 
@@ -357,5 +391,15 @@ class PengajaranController extends Controller
                 'error' => $e->getMessage(),
             ], 500);
         }
+    }
+    public function destroy($id)
+    {
+        $kelas = Kelas::findOrFail($id);
+        $kelas->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Kelas berhasil dihapus'
+        ]);
     }
 }

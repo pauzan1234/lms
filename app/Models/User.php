@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+
 use App\Models\Student;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -25,9 +26,9 @@ class User extends Authenticatable
     ];
 
     public function student()
-{
-    return $this->hasOne(Student::class);
-}
+    {
+        return $this->hasOne(Student::class);
+    }
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -49,5 +50,9 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+    public function lecturer()
+    {
+        return $this->hasOne(Lecturer::class, 'user_id');
     }
 }

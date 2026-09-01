@@ -32,5 +32,8 @@ class PengajaranDosen extends Model
             'id'
         );
     }
-   
+    public function materi()
+    {
+        return $this->hasMany(Materi::class, 'pengajaran_id');
+    }
 }
