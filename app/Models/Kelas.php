@@ -32,4 +32,18 @@ class Kelas extends Model
             'id' //ini adalah kelas.id ==>PK
         );
     }
+    public function pengajaranMahasiswa()
+    {
+        return $this->hasMany(PengajaranMahasiswa::class);
+    }
+    // relasi many-to-many langsung ke Student lewat tabel pivot
+    public function mahasiswa()
+    {
+        return $this->belongsToMany(
+            Student::class,
+            'pengajaran_mahasiswa',
+            'kelas_id',
+            'mahasiswa_id'
+        )->withTimestamps();
+    }
 }
