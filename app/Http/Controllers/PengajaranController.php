@@ -365,6 +365,13 @@ class PengajaranController extends Controller
             ->latest('dibuka_pada')
             ->get();
 
+            // ...kode yang sudah ada (ambil $pengajaran, $materiList, $sesiAbsensiList, dll)
+
+    $quizList = \App\Models\Quiz::where('pengajaran_dosen_id', $pengajaranDosen->id)
+        ->withCount('questions')
+        ->latest()
+        ->get();
+
         return view(
             'lecturer.show',
             [
@@ -372,6 +379,7 @@ class PengajaranController extends Controller
                 'pengajaranDosen' => $pengajaranDosen, // dipakai untuk link Tambah Materi
                 'materiList' => $materiList,           // dipakai untuk render daftar materi
                 'sesiAbsensiList' => $sesiAbsensiList, // <-- tambahan
+                'quizList'=> $quizList,
             ]
         );
     }

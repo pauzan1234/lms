@@ -7,6 +7,7 @@ use App\Http\Controllers\MatakuliahController;
 use App\Http\Controllers\DosenController;
 use App\Http\Controllers\PengajaranController;
 use App\Http\Controllers\MateriController;
+use App\Http\Controllers\QuizController;
 use App\Http\Controllers\SesiAbsensiController;
 use App\Models\Absensi;
 use Illuminate\Support\Facades\Route;
@@ -194,4 +195,14 @@ Route::middleware('auth')->prefix('lecturer')->name('lecturer.')->group(function
 Route::get('absensi/scan/{token}', [AbsensiController::class, 'scan'])
     ->middleware('auth')
     ->name('mahasiswa.absensi.scan');
+
+Route::prefix('quiz')->name('lecturer.quiz.')->group(function () {
+    Route::get('/{pengajaranDosen}', [QuizController::class, 'index'])->name('index');
+    Route::get('/{pengajaranDosen}/create', [QuizController::class, 'create'])->name('create');
+    Route::post('/{pengajaranDosen}', [QuizController::class, 'store'])->name('store');
+    Route::get('/{quiz}/template', [QuizController::class, 'downloadTemplate'])->name('template');
+    Route::post('/{quiz}/import', [QuizController::class, 'import'])->name('import');
+    Route::get('/detail/{quiz}', [QuizController::class, 'show'])->name('show');
+    Route::patch('/{quiz}/publish', [QuizController::class, 'publish'])->name('publish');
+});
 require __DIR__ . '/auth.php';
