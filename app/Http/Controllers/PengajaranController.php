@@ -11,6 +11,7 @@ use App\Models\Kelas;
 use App\Models\PengajaranDosen;
 use App\Models\PengajaranMahasiswa;
 use Illuminate\Support\Facades\Auth;
+use App\Models\SesiAbsensi;
 
 class PengajaranController extends Controller
 {
@@ -325,10 +326,11 @@ class PengajaranController extends Controller
     public function show($id)
     {
         $kelas = Kelas::with([
-            'pengajaranDosen.lecturer.user',
-            'matakuliah'
+            'pengajaranDosen.lecturer.user', // untuk daftar nama dosen pengampu, ditampilkan di @section('ketjudul')
+            'matakuliah',
+            'mahasiswa.user', // <-- ini yang baru
         ])
-            ->findOrFail($id);
+            ->findOrFail($id); // id kelas
 
         // Cari dosen yang sedang login
         $lecturer = Auth::user()->lecturer;
@@ -348,26 +350,31 @@ class PengajaranController extends Controller
             ->first();
 
         if (!$pengajaranDosen) {
+            // dosen ini tidak mengajar di kelas ini, jangan izinkan akses
             abort(403, 'Anda tidak mengajar di kelas ini.');
         }
 
-        // Ambil materi
+        // urutkan materi terbaru di atas (opsional, sesuaikan selera)
         $materiList = $pengajaranDosen->materi()
             ->with('files')
             ->orderBy('urutan')
             ->orderByDesc('created_at')
             ->get();
 
+        $sesiAbsensiList = SesiAbsensi::where('kelas_id', $kelas->id)
+            ->latest('dibuka_pada')
+            ->get();
+
         return view(
             'lecturer.show',
             [
-                'pengajaran' => $kelas,
-                'pengajaranDosen' => $pengajaranDosen,
-                'materiList' => $materiList,
+                'pengajaran' => $kelas,               // dipakai untuk info kelas & mata kuliah
+                'pengajaranDosen' => $pengajaranDosen, // dipakai untuk link Tambah Materi
+                'materiList' => $materiList,           // dipakai untuk render daftar materi
+                'sesiAbsensiList' => $sesiAbsensiList, // <-- tambahan
             ]
         );
     }
-
     public function daftarPeserta(Kelas $kelas)
     {
         try {
