@@ -7,10 +7,7 @@ use App\Http\Controllers\MatakuliahController;
 use App\Http\Controllers\DosenController;
 use App\Http\Controllers\PengajaranController;
 use App\Http\Controllers\MateriController;
-<<<<<<< HEAD
-=======
 use App\Http\Controllers\QuizController;
->>>>>>> a9c369130d7da0ed53bff9498c3232991f1b4f14
 use App\Http\Controllers\SesiAbsensiController;
 use App\Models\Absensi;
 use Illuminate\Support\Facades\Route;
@@ -198,8 +195,6 @@ Route::middleware('auth')->prefix('lecturer')->name('lecturer.')->group(function
 Route::get('absensi/scan/{token}', [AbsensiController::class, 'scan'])
     ->middleware('auth')
     ->name('mahasiswa.absensi.scan');
-<<<<<<< HEAD
-=======
 
 Route::prefix('quiz')->name('lecturer.quiz.')->group(function () {
     Route::get('/{pengajaranDosen}', [QuizController::class, 'index'])->name('index');
@@ -210,5 +205,4 @@ Route::prefix('quiz')->name('lecturer.quiz.')->group(function () {
     Route::get('/detail/{quiz}', [QuizController::class, 'show'])->name('show');
     Route::patch('/{quiz}/publish', [QuizController::class, 'publish'])->name('publish');
 });
->>>>>>> a9c369130d7da0ed53bff9498c3232991f1b4f14
 require __DIR__ . '/auth.php';
