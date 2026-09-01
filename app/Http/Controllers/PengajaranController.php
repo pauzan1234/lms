@@ -372,16 +372,14 @@ class PengajaranController extends Controller
         ->latest()
         ->get();
 
-        $sesiAbsensiList = SesiAbsensi::where('kelas_id', $kelas->id)
-            ->latest('dibuka_pada')
-            ->get();
-
         return view(
             'lecturer.show',
             [
                 'pengajaran' => $kelas,               // dipakai untuk info kelas & mata kuliah
                 'pengajaranDosen' => $pengajaranDosen, // dipakai untuk link Tambah Materi
                 'materiList' => $materiList,           // dipakai untuk render daftar materi
+                'sesiAbsensiList' => $sesiAbsensiList, // <-- tambahan
+                'quizList'=> $quizList,
             ]
         );
     }

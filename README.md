@@ -314,8 +314,6 @@ git push origin main
 ```
 
 > **Catatan:** Jangan memasukkan file `.env` ke GitHub karena file tersebut biasanya berisi konfigurasi database, password, API key, dan informasi sensitif lainnya. Pastikan `.env` sudah tercantum di `.gitignore`.
-<<<<<<< HEAD
-=======
 
 ## Install maatwebsite/excel.
 
@@ -329,4 +327,3 @@ kalau error, pstikan di composer.json seperti ini:
 ```bash
 "maatwebsite/excel": "^3.1",
 ```
->>>>>>> a9c369130d7da0ed53bff9498c3232991f1b4f14
