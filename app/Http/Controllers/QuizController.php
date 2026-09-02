@@ -6,8 +6,10 @@ use App\Exports\QuizTemplateExport;
 use App\Imports\QuizQuestionsImport;
 use App\Models\PengajaranDosen;
 use App\Models\Quiz;
+use App\Models\QuizQuestion;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -124,5 +126,20 @@ class QuizController extends Controller
         return redirect()
             ->route('lecturer.quiz.index', $pengajaranDosenId)
             ->with('success', 'Quiz berhasil dihapus.');
+    }
+    public function uploadGambarSoal(Request $request, QuizQuestion $quizQuestion)
+    {
+        $request->validate([
+            'gambar' => 'required|image|mimes:jpg,jpeg,png|max:5120',
+        ]);
+
+        if ($quizQuestion->gambar) {
+            Storage::disk('public')->delete($quizQuestion->gambar);
+        }
+
+        $path = $request->file('gambar')->store('soal-gambar', 'public');
+        $quizQuestion->update(['gambar' => $path]);
+
+        return redirect()->back()->with('success', 'Gambar soal berhasil ditambahkan.');
     }
 }

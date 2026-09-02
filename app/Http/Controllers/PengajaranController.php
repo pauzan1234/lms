@@ -12,6 +12,7 @@ use App\Models\PengajaranDosen;
 use App\Models\PengajaranMahasiswa;
 use Illuminate\Support\Facades\Auth;
 use App\Models\SesiAbsensi;
+use App\Models\Tugas;
 
 class PengajaranController extends Controller
 {
@@ -365,15 +366,16 @@ class PengajaranController extends Controller
             ->latest('dibuka_pada')
             ->get();
 
-            // ...kode yang sudah ada (ambil $pengajaran, $materiList, $sesiAbsensiList, dll)
+        // ...kode yang sudah ada (ambil $pengajaran, $materiList, $sesiAbsensiList, dll)
 
-    $quizList = \App\Models\Quiz::where('pengajaran_dosen_id', $pengajaranDosen->id)
-        ->withCount('questions')
-        ->latest()
-        ->get();
+        $quizList = \App\Models\Quiz::where('pengajaran_dosen_id', $pengajaranDosen->id)
+            ->withCount('questions')
+            ->latest()
+            ->get();
 
-        $sesiAbsensiList = SesiAbsensi::where('kelas_id', $kelas->id)
-            ->latest('dibuka_pada')
+        $tugasList = Tugas::where('pengajaran_dosen_id', $pengajaranDosen->id)
+            ->withCount('jawaban')
+            ->latest()
             ->get();
 
         return view(
@@ -382,6 +384,9 @@ class PengajaranController extends Controller
                 'pengajaran' => $kelas,               // dipakai untuk info kelas & mata kuliah
                 'pengajaranDosen' => $pengajaranDosen, // dipakai untuk link Tambah Materi
                 'materiList' => $materiList,           // dipakai untuk render daftar materi
+                'sesiAbsensiList' => $sesiAbsensiList, // <-- tambahan
+                'quizList' => $quizList,
+                'tugasList' => $tugasList // tambahkan ini
             ]
         );
     }

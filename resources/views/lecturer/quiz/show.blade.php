@@ -135,10 +135,10 @@
             <div class="mt-6 overflow-hidden rounded-2xl border border-line bg-white shadow-sm">
                 <div class="border-b border-line p-6">
                     <h2 class="font-display text-base font-semibold text-ink">
-                        Preview Soal
+                        Soal-soal Pilihan Ganda
                     </h2>
                     <p class="mt-1 text-sm text-ink/50">
-                        Periksa soal yang sudah diimport sebelum publish.
+                        Anda dapat menambahkan gambar untuk tiap soal
                     </p>
                 </div>
 
@@ -150,15 +150,39 @@
                                 {{ $q->nomor }}. {{ $q->pertanyaan }}
                             </p>
 
+                            {{-- Gambar soal --}}
+                            <div class="mt-3">
+                                @if ($q->gambar)
+                                    <img src="{{ asset('storage/' . $q->gambar) }}" alt="Gambar soal {{ $q->nomor }}"
+                                        class="mb-2 max-w-sm rounded-lg border border-line object-cover">
+                                @endif
+
+                                <form method="POST" action="{{ route('lecturer.quiz.question.gambar', $q) }}"
+                                    enctype="multipart/form-data" class="flex flex-wrap items-center gap-2">
+                                    @csrf
+                                    <input type="file" name="gambar" accept="image/*" required
+                                        class="block text-xs text-ink/70
+                       file:mr-2 file:rounded-lg file:border-0 file:bg-paper
+                       file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-ink
+                       hover:file:bg-line/30">
+                                    <button type="submit"
+                                        class="rounded-lg border border-line px-3 py-1.5 text-xs font-semibold text-ink
+                       transition hover:bg-paper">
+                                        {{ $q->gambar ? 'Ganti Gambar' : 'Upload Gambar' }}
+                                    </button>
+                                </form>
+                            </div>
+
+                            {{-- Pilihan jawaban --}}
                             <div class="mt-3 space-y-1.5">
                                 @foreach ($q->pilihanTersedia() as $huruf => $teks)
                                     <div
                                         class="flex items-center gap-2 text-sm
-                                    {{ $huruf === $q->kunci_jawaban ? 'font-semibold text-green-700' : 'text-ink/70' }}">
+                {{ $huruf === $q->kunci_jawaban ? 'font-semibold text-green-700' : 'text-ink/70' }}">
                                         <span
                                             class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full
-                                         border text-xs
-                                         {{ $huruf === $q->kunci_jawaban ? 'border-green-600 bg-green-50' : 'border-line' }}">
+                     border text-xs
+                     {{ $huruf === $q->kunci_jawaban ? 'border-green-600 bg-green-50' : 'border-line' }}">
                                             {{ $huruf }}
                                         </span>
                                         {{ $teks }}
@@ -170,7 +194,6 @@
                             </div>
                         </div>
                     @empty
-
                         <div class="p-6">
                             <div class="rounded-xl border border-dashed border-line bg-paper p-8 text-center">
                                 <p class="text-sm text-ink/50">

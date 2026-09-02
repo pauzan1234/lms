@@ -165,13 +165,13 @@
                                                     viewBox="0 0 24 24">
 
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5
-                                                           S4.168 5.477 3 6.253v13
-                                                           C4.168 18.477 5.754 18 7.5 18
-                                                           s3.332.477 4.5 1.253
-                                                           m0-13C13.168 5.477 14.754 5
-                                                           16.5 5c1.746 0 3.332.477 4.5 1.253v13
-                                                           C19.832 18.477 18.246 18 16.5 18
-                                                           c-1.746 0-3.332.477-4.5 1.253" />
+                                                               S4.168 5.477 3 6.253v13
+                                                               C4.168 18.477 5.754 18 7.5 18
+                                                               s3.332.477 4.5 1.253
+                                                               m0-13C13.168 5.477 14.754 5
+                                                               16.5 5c1.746 0 3.332.477 4.5 1.253v13
+                                                               C19.832 18.477 18.246 18 16.5 18
+                                                               c-1.746 0-3.332.477-4.5 1.253" />
 
                                                 </svg>
 
@@ -360,29 +360,72 @@
                             </div>
 
 
-                            <button
+                            <a href="{{ route('lecturer.tugas.create', $pengajaranDosen->id) }}"
                                 class="rounded-lg bg-ink px-4 py-2.5 text-sm font-semibold text-white
-                                   transition hover:bg-primaryDark">
-
+           transition hover:bg-primaryDark">
                                 + Tambah Tugas
-
-                            </button>
+                            </a>
 
                         </div>
 
 
-                        {{-- Empty State --}}
-                        <div class="p-6">
 
-                            <div
-                                class="rounded-xl border border-dashed border-line
-                                   bg-paper p-8 text-center">
 
-                                <p class="text-sm text-ink/50">
-                                    Belum ada tugas.
-                                </p>
 
-                            </div>
+                        {{-- List Tugas --}}
+                        <div class="divide-y divide-line">
+
+                            @forelse ($tugasList as $tugas)
+                                <div class="flex items-center justify-between gap-4 p-5">
+
+                                    <a href="{{ route('lecturer.tugas.show', $tugas->id) }}" class="min-w-0 flex-1">
+                                        <h3 class="truncate text-sm font-semibold text-ink hover:underline">
+                                            {{ $tugas->judul }}
+                                        </h3>
+                                        <p class="mt-1 text-xs text-ink/50">
+                                            @if ($tugas->deadline)
+                                                Deadline: {{ $tugas->deadline->format('d M Y, H:i') }}
+                                            @else
+                                                Tanpa deadline
+                                            @endif
+                                            • {{ $tugas->jawaban_count ?? $tugas->jawaban->count() }} pengumpulan
+                                        </p>
+                                    </a>
+                                    <a href="{{ route('lecturer.tugas.jawaban.index', $tugas) }}"
+                                        class="rounded-lg border border-line px-4 py-2.5 text-sm font-semibold text-ink transition hover:bg-paper">
+                                        Lihat & Koreksi Jawaban
+                                    </a>
+                                    <div class="flex shrink-0 items-center gap-2">
+                                        <a href="{{ route('lecturer.tugas.show', $tugas->id) }}"
+                                            class="rounded-lg border border-line px-3 py-1.5 text-xs font-semibold text-ink hover:bg-paper">
+                                            Lihat
+                                        </a>
+                                        <a href="{{ route('lecturer.tugas.edit', $tugas->id) }}"
+                                            class="rounded-lg border border-line px-3 py-1.5 text-xs font-semibold text-ink hover:bg-paper">
+                                            Edit
+                                        </a>
+                                    </div>
+
+                                </div>
+                            @empty
+
+                                {{-- Empty State --}}
+                                <div class="p-6">
+
+                                    <div
+                                        class="rounded-xl border border-dashed border-line
+                   bg-paper p-8 text-center">
+
+                                        <p class="text-sm text-ink/50">
+                                            Belum ada tugas.
+                                        </p>
+
+                                    </div>
+
+                                </div>
+                            @endforelse
+
+
 
                         </div>
 
@@ -485,141 +528,6 @@
 
                     </div>
 
-<<<<<<< HEAD
-                </div>
-                {{-- =================================================
-                 MAHASISWA
-                ================================================== --}}
-                <div id="mahasiswa"
-                    class="mt-8 overflow-hidden rounded-2xl border border-line bg-white shadow-sm">
-
-                    {{-- Header --}}
-                    <div class="flex flex-col justify-between gap-4 border-b border-line p-6
-                sm:flex-row sm:items-center">
-                        <div>
-                            <h2 class="font-display text-lg font-semibold text-ink">
-                                Mahasiswa
-                            </h2>
-                            <p class="mt-1 text-sm text-ink/50">
-                                Daftar mahasiswa yang mengambil kelas ini.
-                            </p>
-                        </div>
-
-                        <span class="text-sm font-medium text-ink/60">
-                            {{ $pengajaran->mahasiswa->count() }} mahasiswa
-                        </span>
-                    </div>
-
-                    {{-- List Mahasiswa --}}
-                    <div class="divide-y divide-line">
-
-                        @forelse ($pengajaran->mahasiswa as $mhs)
-                        <div class="flex items-center gap-4 p-5">
-
-                            {{-- Avatar --}}
-                            <div class="flex h-11 w-11 shrink-0 items-center justify-center
-                        rounded-full bg-paper text-sm font-semibold text-ink">
-                                {{ strtoupper(substr($mhs->user->name ?? 'M', 0, 1)) }}
-                            </div>
-
-                            {{-- Info --}}
-                            <div class="min-w-0 flex-1">
-                                <h3 class="truncate text-sm font-semibold text-ink">
-                                    {{ $mhs->user->name ?? '-' }}
-                                </h3>
-                                <p class="mt-1 text-xs text-ink/50">
-                                    NIM: {{ $mhs->nim ?? '-' }}
-                                </p>
-                            </div>
-
-                        </div>
-                        @empty
-
-                        {{-- Empty State --}}
-                        <div class="p-6">
-                            <div class="rounded-xl border border-dashed border-line
-                        bg-paper p-8 text-center">
-                                <p class="text-sm text-ink/50">
-                                    Belum ada mahasiswa yang mengambil kelas ini.
-                                </p>
-                            </div>
-                        </div>
-
-                        @endforelse
-
-                    </div>
-                </div>
-                {{-- =================================================
-                    ABSENSI
-                ================================================== --}}
-                {{-- =================================================
-    ABSENSI
-================================================== --}}
-                <div id="absensi"
-                    class="mt-8 overflow-hidden rounded-2xl border border-line bg-white shadow-sm">
-
-                    {{-- Header --}}
-                    <div class="flex flex-col justify-between gap-4 border-b border-line p-6
-                sm:flex-row sm:items-center">
-                        <div>
-                            <h2 class="font-display text-lg font-semibold text-ink">
-                                Absensi
-                            </h2>
-                            <p class="mt-1 text-sm text-ink/50">
-                                Kelola kehadiran mahasiswa per pertemuan.
-                            </p>
-                        </div>
-
-                        <button type="button"
-                            @click="$dispatch('open-modal-absensi')"
-                            class="rounded-lg bg-ink px-4 py-2.5 text-sm font-semibold text-white
-                   transition hover:bg-primaryDark">
-                            + Buka Absensi
-                        </button>
-                    </div>
-
-                    {{-- List Sesi Absensi --}}
-                    <div class="divide-y divide-line">
-
-                        @forelse ($sesiAbsensiList as $s)
-                        <a href="{{ route('lecturer.absensi.show', $s->id) }}"
-                            class="flex items-center justify-between gap-4 p-5 transition hover:bg-paper">
-
-                            <div>
-                                <h3 class="text-sm font-semibold text-ink">
-                                    Pertemuan {{ $s->pertemuan_ke }}
-                                    @if ($s->judul) — {{ $s->judul }} @endif
-                                </h3>
-                                <p class="mt-1 text-xs text-ink/50">
-                                    {{ $s->dibuka_pada->format('d M Y, H:i') }}
-                                    • {{ $s->absensi()->count() }} mahasiswa hadir
-                                </p>
-                            </div>
-
-                            @if ($s->isExpired())
-                            <span class="rounded-full bg-red-50 px-3 py-1 text-xs font-semibold text-red-600">
-                                Ditutup
-                            </span>
-                            @else
-                            <span class="rounded-full bg-green-50 px-3 py-1 text-xs font-semibold text-green-700">
-                                Aktif
-                            </span>
-                            @endif
-
-                        </a>
-                        @empty
-
-                        <div class="p-6">
-                            <div class="rounded-xl border border-dashed border-line bg-paper p-8 text-center">
-                                <p class="text-sm text-ink/50">
-                                    Belum ada sesi absensi untuk mata kuliah ini.
-                                </p>
-                            </div>
-                        </div>
-
-                        @endforelse
-
-=======
                     {{-- =================================================
                  MAHASISWA
                 ================================================== --}}
@@ -755,7 +663,6 @@
                             @endforelse
 
                         </div>
->>>>>>> a9c369130d7da0ed53bff9498c3232991f1b4f14
                     </div>
                 </div>
 
@@ -808,7 +715,7 @@
 
 
                             {{-- Tambah Tugas --}}
-                            <button
+                            <a href="{{ route('lecturer.tugas.create', $pengajaranDosen->id) }}"
                                 class="flex w-full items-center gap-3 rounded-xl border border-line
                                    p-3 text-left transition hover:bg-paper">
 
@@ -823,16 +730,16 @@
                                 <div>
 
                                     <p class="text-sm font-semibold text-ink">
-                                        Tambah Tugas
+                                        Buat Tugas
                                     </p>
 
                                     <p class="text-xs text-ink/50">
-                                        Buat tugas baru
+                                        Tambahkan tugas
                                     </p>
 
                                 </div>
 
-                            </button>
+                            </a>
 
 
                             {{-- Buat Quiz --}}
@@ -895,15 +802,10 @@
 
 
                             <div class="flex items-center justify-between">
-
-                                <span class="text-sm text-ink/50">
-                                    Tugas
-                                </span>
-
+                                <span class="text-sm text-ink/50">Tugas</span>
                                 <span class="font-semibold text-ink">
-                                    0
+                                    {{ $tugasList->count() }}
                                 </span>
-
                             </div>
 
 
@@ -930,44 +832,6 @@
 
                         </div>
 
-<<<<<<< HEAD
-
-                        <div class="flex items-center justify-between">
-
-                            <span class="text-sm text-ink/50">
-                                Tugas
-                            </span>
-
-                            <span class="font-semibold text-ink">
-                                0
-                            </span>
-
-                        </div>
-
-
-                        <div class="flex items-center justify-between">
-
-                            <span class="text-sm text-ink/50">
-                                Quiz
-                            </span>
-
-                            <span class="font-semibold text-ink">
-                                0
-                            </span>
-
-                        </div>
-
-
-                        <div class="flex items-center justify-between">
-                            <span class="text-sm text-ink/50">Mahasiswa</span>
-                            <span class="font-semibold text-ink">
-                                {{ $pengajaran->mahasiswa->count() }}
-                            </span>
-                        </div>
-
-
-=======
->>>>>>> a9c369130d7da0ed53bff9498c3232991f1b4f14
                     </div>
 
 
@@ -985,128 +849,6 @@
         @keydown.escape.window="open = false" class="fixed inset-0 z-50 flex items-center justify-center p-4"
         style="display: none;">
 
-<<<<<<< HEAD
-</div>
-{{-- =================================================
-    MODAL: BUKA ABSENSI
-================================================== --}}
-<div x-data="{ open: false }"
-    x-show="open"
-    x-cloak
-    @open-modal-absensi.window="open = true"
-    @keydown.escape.window="open = false"
-    class="fixed inset-0 z-50 flex items-center justify-center p-4"
-    style="display: none;">
-
-    {{-- Backdrop --}}
-    <div x-show="open"
-        x-transition:enter="transition ease-out duration-200"
-        x-transition:enter-start="opacity-0"
-        x-transition:enter-end="opacity-100"
-        x-transition:leave="transition ease-in duration-150"
-        x-transition:leave-start="opacity-100"
-        x-transition:leave-end="opacity-0"
-        @click="open = false"
-        class="absolute inset-0 bg-ink/40"></div>
-
-    {{-- Modal Box --}}
-    <div x-show="open"
-        x-transition:enter="transition ease-out duration-200"
-        x-transition:enter-start="opacity-0 scale-95"
-        x-transition:enter-end="opacity-100 scale-100"
-        x-transition:leave="transition ease-in duration-150"
-        x-transition:leave-start="opacity-100 scale-100"
-        x-transition:leave-end="opacity-0 scale-95"
-        class="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
-
-        {{-- Header --}}
-        <div class="flex items-center justify-between">
-            <h2 class="font-display text-lg font-semibold text-ink">
-                Buka Sesi Absensi
-            </h2>
-            <button type="button" @click="open = false"
-                class="rounded-lg p-1.5 text-ink/40 transition hover:bg-paper hover:text-ink">
-                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            </button>
-        </div>
-
-        <p class="mt-1 text-sm text-ink/50">
-            QR code akan digenerate otomatis setelah sesi dibuka.
-        </p>
-
-        {{-- Form --}}
-        <form method="POST"
-            action="{{ route('lecturer.absensi.store', $pengajaran->id) }}"
-            class="mt-5 space-y-4">
-            @csrf
-
-            {{-- Pertemuan Ke --}}
-            <div>
-                <label class="block text-sm font-medium text-ink">
-                    Pertemuan Ke
-                </label>
-                <input type="number" name="pertemuan_ke" min="1" required
-                    value="{{ old('pertemuan_ke', $sesiAbsensiList->count() + 1) }}"
-                    class="mt-1.5 w-full rounded-lg border border-line px-3.5 py-2.5 text-sm
-                           text-ink outline-none transition focus:border-ink">
-                @error('pertemuan_ke')
-                <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                @enderror
-            </div>
-
-            {{-- Judul --}}
-            <div>
-                <label class="block text-sm font-medium text-ink">
-                    Judul / Topik <span class="text-ink/40">(opsional)</span>
-                </label>
-                <input type="text" name="judul"
-                    value="{{ old('judul') }}"
-                    placeholder="Misal: Normalisasi Database"
-                    class="mt-1.5 w-full rounded-lg border border-line px-3.5 py-2.5 text-sm
-                           text-ink outline-none transition focus:border-ink">
-                @error('judul')
-                <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                @enderror
-            </div>
-
-            {{-- Durasi --}}
-            <div>
-                <label class="block text-sm font-medium text-ink">
-                    Durasi QR Aktif (menit)
-                </label>
-                <input type="number" name="durasi_menit" min="1" max="180" required
-                    value="{{ old('durasi_menit', 15) }}"
-                    class="mt-1.5 w-full rounded-lg border border-line px-3.5 py-2.5 text-sm
-                           text-ink outline-none transition focus:border-ink">
-                @error('durasi_menit')
-                <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                @enderror
-            </div>
-
-            {{-- Aksi --}}
-            <div class="mt-6 flex justify-end gap-3">
-                <button type="button" @click="open = false"
-                    class="rounded-lg border border-line px-4 py-2.5 text-sm font-semibold text-ink
-                           transition hover:bg-paper">
-                    Batal
-                </button>
-                <button type="submit"
-                    class="rounded-lg bg-ink px-4 py-2.5 text-sm font-semibold text-white
-                           transition hover:bg-primaryDark">
-                    Buka Absensi
-                </button>
-            </div>
-
-        </form>
-
-    </div>
-
-</div>
-@endsection
-=======
         {{-- Backdrop --}}
         <div x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0"
             x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-150"
@@ -1203,4 +945,3 @@
 
     </div>
 @endsection
->>>>>>> a9c369130d7da0ed53bff9498c3232991f1b4f14

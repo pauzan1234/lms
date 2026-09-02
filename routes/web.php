@@ -5,13 +5,14 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\MatakuliahController;
 use App\Http\Controllers\DosenController;
+use App\Http\Controllers\Lecturer\TugasController as LecturerTugasController;
+use App\Http\Controllers\Student\TugasController as StudentTugasController;
 use App\Http\Controllers\PengajaranController;
 use App\Http\Controllers\MateriController;
-<<<<<<< HEAD
-=======
 use App\Http\Controllers\QuizController;
->>>>>>> a9c369130d7da0ed53bff9498c3232991f1b4f14
 use App\Http\Controllers\SesiAbsensiController;
+use App\Http\Controllers\StudentQuizController;
+use App\Http\Controllers\StudentAbsensiController;
 use App\Models\Absensi;
 use Illuminate\Support\Facades\Route;
 
@@ -198,8 +199,6 @@ Route::middleware('auth')->prefix('lecturer')->name('lecturer.')->group(function
 Route::get('absensi/scan/{token}', [AbsensiController::class, 'scan'])
     ->middleware('auth')
     ->name('mahasiswa.absensi.scan');
-<<<<<<< HEAD
-=======
 
 Route::prefix('quiz')->name('lecturer.quiz.')->group(function () {
     Route::get('/{pengajaranDosen}', [QuizController::class, 'index'])->name('index');
@@ -210,5 +209,74 @@ Route::prefix('quiz')->name('lecturer.quiz.')->group(function () {
     Route::get('/detail/{quiz}', [QuizController::class, 'show'])->name('show');
     Route::patch('/{quiz}/publish', [QuizController::class, 'publish'])->name('publish');
 });
->>>>>>> a9c369130d7da0ed53bff9498c3232991f1b4f14
+
+Route::post('lecturer/quiz/question/{quizQuestion}/gambar', [QuizController::class, 'uploadGambarSoal'])
+    ->name('lecturer.quiz.question.gambar');
+
+
+Route::prefix('lecturer')->name('lecturer.')->group(function () {
+    // ...route lain yang sudah ada (materi, quiz, dll)
+
+    Route::get('tugas/create/{pengajaranDosen}', [LecturerTugasController::class, 'create'])
+        ->name('tugas.create');
+
+    Route::post('tugas/{pengajaranDosen}', [LecturerTugasController::class, 'store'])
+        ->name('tugas.store');
+
+    Route::get('tugas/{tugas}/edit', [LecturerTugasController::class, 'edit'])
+        ->name('tugas.edit');
+
+    Route::put('tugas/{tugas}', [LecturerTugasController::class, 'update'])
+        ->name('tugas.update');
+
+    Route::delete('tugas/{tugas}', [LecturerTugasController::class, 'destroy'])
+        ->name('tugas.destroy');
+
+    // Kalau route show belum ada di tempat lain, tambahkan ini:
+    Route::get('tugas/{tugas}', [LecturerTugasController::class, 'show'])
+        ->name('tugas.show');
+
+    // Koreksi jawaban mahasiswa
+    Route::get('tugas/{tugas}/jawaban', [LecturerTugasController::class, 'jawabanIndex'])
+        ->name('tugas.jawaban.index');
+
+    Route::get('tugas/{tugas}/jawaban/{jawaban}', [LecturerTugasController::class, 'jawabanShow'])
+        ->name('tugas.jawaban.show');
+
+    Route::post('tugas/{tugas}/jawaban/{jawaban}/koreksi', [LecturerTugasController::class, 'koreksi'])
+        ->name('tugas.jawaban.koreksi');
+});
+Route::get('lecturer/tugas/{tugas}', [LecturerTugasController::class, 'show'])
+    ->name('lecturer.tugas.show');
+
+
+Route::get('student/matakuliah', [MatakuliahController::class, 'index_mhs'])
+    ->name('student.matakuliah.index');
+
+Route::get('student/matakuliah/{kelas}', [MatakuliahController::class, 'show'])
+    ->name('student.matakuliah.show');
+
+Route::get('student/quiz/{quiz}', [StudentQuizController::class, 'show'])
+    ->name('student.quiz.show');
+
+Route::post('student/quiz/{quiz}/submit', [StudentQuizController::class, 'submit'])
+    ->name('student.quiz.submit');
+
+Route::get('student/absensi/scan', [StudentAbsensiController::class, 'scan'])
+    ->name('student.absensi.scan');
+
+Route::post('student/absensi/absen', [StudentAbsensiController::class, 'absen'])
+    ->name('student.absensi.absen');
+
+
+
+Route::middleware(['auth', 'role:student']) // sesuaikan nama middleware Anda
+    ->prefix('student')
+    ->name('student.')
+    ->group(function () {
+        Route::get('tugas/{tugas}', [StudentTugasController::class, 'show'])->name('tugas.show');
+        Route::post('tugas/{tugas}/submit', [StudentTugasController::class, 'submit'])->name('tugas.submit');
+    });
+
+    
 require __DIR__ . '/auth.php';
