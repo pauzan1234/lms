@@ -14,6 +14,7 @@ class QuizQuestion extends Model
         'quiz_id',
         'nomor',
         'pertanyaan',
+        'gambar',
         'pilihan_a',
         'pilihan_b',
         'pilihan_c',
@@ -41,6 +42,6 @@ class QuizQuestion extends Model
             'E' => $this->pilihan_e,
         ];
 
-        return array_filter($semua, fn ($v) => filled($v));
+        return array_filter($semua, fn($v) => filled($v));
     }
 }

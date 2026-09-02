@@ -10,6 +10,8 @@ use App\Http\Controllers\PengajaranController;
 use App\Http\Controllers\MateriController;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\SesiAbsensiController;
+use App\Http\Controllers\StudentQuizController;
+use App\Http\Controllers\StudentAbsensiController;
 use App\Models\Absensi;
 use Illuminate\Support\Facades\Route;
 
@@ -207,6 +209,10 @@ Route::prefix('quiz')->name('lecturer.quiz.')->group(function () {
     Route::patch('/{quiz}/publish', [QuizController::class, 'publish'])->name('publish');
 });
 
+Route::post('lecturer/quiz/question/{quizQuestion}/gambar', [QuizController::class, 'uploadGambarSoal'])
+    ->name('lecturer.quiz.question.gambar');
+
+
 Route::prefix('lecturer')->name('lecturer.')->group(function () {
     // ...route lain yang sudah ada (materi, quiz, dll)
 
@@ -227,4 +233,23 @@ Route::prefix('lecturer')->name('lecturer.')->group(function () {
 });
 Route::get('lecturer/tugas/{tugas}', [TugasController::class, 'show'])
     ->name('lecturer.tugas.show');
+
+
+Route::get('student/matakuliah', [MatakuliahController::class, 'index_mhs'])
+    ->name('student.matakuliah.index');
+
+Route::get('student/matakuliah/{kelas}', [MatakuliahController::class, 'show'])
+    ->name('student.matakuliah.show');
+
+Route::get('student/quiz/{quiz}', [StudentQuizController::class, 'show'])
+    ->name('student.quiz.show');
+
+Route::post('student/quiz/{quiz}/submit', [StudentQuizController::class, 'submit'])
+    ->name('student.quiz.submit');
+
+Route::get('student/absensi/scan', [StudentAbsensiController::class, 'scan'])
+    ->name('student.absensi.scan');
+
+Route::post('student/absensi/absen', [StudentAbsensiController::class, 'absen'])
+    ->name('student.absensi.absen');
 require __DIR__ . '/auth.php';
