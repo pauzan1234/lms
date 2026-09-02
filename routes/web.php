@@ -268,8 +268,6 @@ Route::get('student/absensi/scan', [StudentAbsensiController::class, 'scan'])
 Route::post('student/absensi/absen', [StudentAbsensiController::class, 'absen'])
     ->name('student.absensi.absen');
 
-
-
 Route::middleware(['auth', 'role:student']) // sesuaikan nama middleware Anda
     ->prefix('student')
     ->name('student.')
@@ -277,6 +275,18 @@ Route::middleware(['auth', 'role:student']) // sesuaikan nama middleware Anda
         Route::get('tugas/{tugas}', [StudentTugasController::class, 'show'])->name('tugas.show');
         Route::post('tugas/{tugas}/submit', [StudentTugasController::class, 'submit'])->name('tugas.submit');
     });
+
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])
+        ->name('profile.edit');
+
+    Route::put('/profile', [ProfileController::class, 'update'])
+        ->name('profile.update');
+
+    Route::put('/password', [ProfileController::class, 'updatePassword'])
+        ->name('password.update');
+});
 
     
 require __DIR__ . '/auth.php';

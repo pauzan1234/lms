@@ -24,6 +24,11 @@ class Student extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    public function student()
+    {
+        return $this->hasOne(Student::class, 'user_id');
+    }
+
     public function prodi()
     {
         return $this->belongsTo(Prodi::class, 'prodi_id');
