@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Models;
+
 use App\Models\Lecturer;
 use App\Models\Student;
 
@@ -12,12 +14,13 @@ class Prodi extends Model
     protected $table = 'prodi'; // karena nama tabel singular, bukan "prodis"
     protected $fillable = ['nama_prodi'];
 
-     public function lecturers(): HasMany
+    public function lecturers(): HasMany
     {
         return $this->hasMany(Lecturer::class, 'prodi_id', 'id');
     }
-public function students()
-{
-    return $this->hasMany(Student::class);
-}
+    public function students()
+    {
+        return $this->hasMany(Student::class);
+    }
+    
 }
