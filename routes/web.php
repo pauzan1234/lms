@@ -5,6 +5,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\MatakuliahController;
 use App\Http\Controllers\DosenController;
+use App\Http\Controllers\Lecturer\TugasController;
 use App\Http\Controllers\PengajaranController;
 use App\Http\Controllers\MateriController;
 use App\Http\Controllers\QuizController;
@@ -205,4 +206,25 @@ Route::prefix('quiz')->name('lecturer.quiz.')->group(function () {
     Route::get('/detail/{quiz}', [QuizController::class, 'show'])->name('show');
     Route::patch('/{quiz}/publish', [QuizController::class, 'publish'])->name('publish');
 });
+
+Route::prefix('lecturer')->name('lecturer.')->group(function () {
+    // ...route lain yang sudah ada (materi, quiz, dll)
+
+    Route::get('tugas/create/{pengajaranDosen}', [TugasController::class, 'create'])
+        ->name('tugas.create');
+
+    Route::post('tugas/{pengajaranDosen}', [TugasController::class, 'store'])
+        ->name('tugas.store');
+
+    Route::get('tugas/{tugas}/edit', [TugasController::class, 'edit'])
+        ->name('tugas.edit');
+
+    Route::put('tugas/{tugas}', [TugasController::class, 'update'])
+        ->name('tugas.update');
+
+    Route::delete('tugas/{tugas}', [TugasController::class, 'destroy'])
+        ->name('tugas.destroy');
+});
+Route::get('lecturer/tugas/{tugas}', [TugasController::class, 'show'])
+    ->name('lecturer.tugas.show');
 require __DIR__ . '/auth.php';
