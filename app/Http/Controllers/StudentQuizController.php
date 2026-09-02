@@ -13,7 +13,7 @@ class StudentQuizController extends Controller
     public function show(Quiz $quiz)
     {
         $mahasiswa = auth()->user()->student;
-
+        $sessionKey = 'quiz_mulai_' . $quiz->id;
         abort_unless($quiz->is_published, 404);
 
         $quiz->load('questions');
@@ -21,8 +21,12 @@ class StudentQuizController extends Controller
         $jawabanSaya = QuizJawaban::where('quiz_id', $quiz->id)
             ->where('mahasiswa_id', $mahasiswa->id)
             ->first();
-
-        return view('student.quiz.show', compact('quiz', 'jawabanSaya'));
+        $waktuSelesai = null;
+        if (!$jawabanSaya && $quiz->durasi_menit) {
+            $waktuMulai = session($sessionKey);
+            $waktuSelesai = \Carbon\Carbon::parse($waktuMulai)->addMinutes($quiz->durasi_menit);
+        }
+        return view('student.quiz.show', compact('quiz', 'jawabanSaya', 'waktuSelesai'));
     }
 
     public function submit(Request $request, Quiz $quiz)
@@ -36,12 +40,44 @@ class StudentQuizController extends Controller
         );
 
         $validated = $request->validate([
-            'jawaban'   => 'required|array',
-            'jawaban.*' => 'nullable|in:A,B,C,D,E',
+            'jawaban'     => 'nullable|array',
+            'jawaban.*'   => 'nullable|in:A,B,C,D,E',
+            'auto_submit' => 'nullable|boolean',
         ]);
 
-        $quiz->load('questions');
+        $jawabanArray = $validated['jawaban'] ?? [];
 
+        $this->simpanJawaban($quiz, $mahasiswa, $jawabanArray);
+
+        session()->forget('quiz_mulai_' . $quiz->id . '_' . $mahasiswa->id);
+
+        $isAutoSubmit = $request->boolean('auto_submit');
+
+        return redirect()
+            ->route('student.quiz.show', $quiz->id)
+            ->with('success', $isAutoSubmit
+                ? 'Waktu habis, jawaban kamu otomatis dikirim.'
+                : "Quiz selesai!");
+    }
+
+    private function autoSubmitKosong(Quiz $quiz, $mahasiswa, string $sessionKey)
+    {
+        // Guard: kalau ternyata sudah ada jawaban (race condition), skip
+        if (QuizJawaban::where('quiz_id', $quiz->id)->where('mahasiswa_id', $mahasiswa->id)->exists()) {
+            session()->forget($sessionKey);
+            return redirect()->route('student.quiz.show', $quiz->id);
+        }
+
+        $this->simpanJawaban($quiz, $mahasiswa, []);
+        session()->forget($sessionKey);
+
+        return redirect()
+            ->route('student.quiz.show', $quiz->id)
+            ->with('success', 'Waktu pengerjaan sudah habis, jawaban dikirim otomatis.');
+    }
+
+    private function simpanJawaban(Quiz $quiz, $mahasiswa, array $jawabanArray)
+    {
         $jumlahBenar = 0;
 
         $quizJawaban = QuizJawaban::create([
@@ -51,7 +87,7 @@ class StudentQuizController extends Controller
         ]);
 
         foreach ($quiz->questions as $question) {
-            $dipilih = $validated['jawaban'][$question->id] ?? null;
+            $dipilih = $jawabanArray[$question->id] ?? null;
             $benar   = $dipilih === $question->kunci_jawaban;
 
             if ($benar) {
@@ -71,8 +107,6 @@ class StudentQuizController extends Controller
 
         $quizJawaban->update(['skor' => $skor]);
 
-        return redirect()
-            ->route('student.quiz.show', $quiz->id)
-            ->with('success', "Quiz selesai! Skor kamu: {$skor}");
+        return $quizJawaban;
     }
 }
