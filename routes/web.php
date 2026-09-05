@@ -82,6 +82,12 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
         ->name('admin.tambah.matkul');
 });
 
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit_admin'])
+        ->name('profile.edit'); // hasil akhir: lecturer.profile.edit
+    Route::match(['put', 'patch'], '/profile', [ProfileController::class, 'update_admin'])
+        ->name('profile.update');
+});
 Route::get('/akun_dosen', [AccountController::class, 'index'])->name('akun_dosen.index');
 
 Route::get('/akun/dosen/import', [AccountController::class, 'import_dosen'])->name('dosen.import');
@@ -245,6 +251,10 @@ Route::prefix('lecturer')->name('lecturer.')->group(function () {
 
     Route::post('tugas/{tugas}/jawaban/{jawaban}/koreksi', [LecturerTugasController::class, 'koreksi'])
         ->name('tugas.jawaban.koreksi');
+    Route::get('/profile', [ProfileController::class, 'edit_lecturer'])
+        ->name('profile.edit'); // hasil akhir: lecturer.profile.edit
+    Route::match(['put', 'patch'], '/profile', [ProfileController::class, 'update_lecturer'])
+        ->name('profile.update');
 });
 Route::get('lecturer/tugas/{tugas}', [LecturerTugasController::class, 'show'])
     ->name('lecturer.tugas.show');
@@ -288,5 +298,5 @@ Route::middleware('auth')->group(function () {
         ->name('password.update');
 });
 
-    
+
 require __DIR__ . '/auth.php';
