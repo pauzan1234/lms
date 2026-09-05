@@ -1,4 +1,4 @@
-@extends('lecturer.app-lecturer-create-materi')
+@extends('admin.app-admin')
 @section('ketjudul')
 
 @endsection
@@ -43,7 +43,7 @@ Kelola informasi profil dan keamanan akun Anda.
 
     <div class="p-6 sm:p-8">
 
-        @include('profile.partials.update-profile-information-form-lecturer')
+        @include('profile.partials.update-profile-information-form-admin')
 
     </div>
 

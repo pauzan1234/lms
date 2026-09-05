@@ -17,10 +17,17 @@
  <!-- Profil singkat -->
  <div class="px-6 py-5 border-b border-white/10 shrink-0">
    <div class="flex items-center gap-3">
-     <img src="https://i.pravatar.cc/80?img=32" class="w-11 h-11 rounded-full object-cover border-2 border-white/10" alt="">
+     <a href="{{ route('lecturer.profile.edit') }}" class="block">
+       <img
+         src="{{ Auth::user()->profile_photo
+            ? asset('storage/' . Auth::user()->profile_photo)
+            : 'https://i.pravatar.cc/80?img=32' }}"
+         class="w-11 h-11 rounded-full object-cover border-2 border-white/10 cursor-pointer hover:opacity-80 transition"
+         alt="Foto Profil">
+     </a>
      <div class="min-w-0">
        <p class="text-sm font-medium truncate">{{ Auth::user()->name }}</p>
-       <p class="text-xs text-paper/45 truncate font-mono">2210631170045 · TI</p>
+       <p class="text-xs text-paper/45 truncate font-mono"> {{ Auth::user()->lecturer->nidn }} · {{ Auth::user()->lecturer?->prodi_id?->nama_prodi ?? '-' }}</p>
      </div>
    </div>
  </div>
