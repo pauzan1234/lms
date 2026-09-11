@@ -245,6 +245,7 @@ Route::get('/matakuliahsaya', [PengajaranController::class, 'mk_saya'])
 
 Route::get('/pengajaran/{id}', [PengajaranController::class, 'show'])
     ->name('pengajaran.show');
+    
 Route::get(
     '/kelas/{kelas}/students',
     [PengajaranController::class, 'searchStudents']
