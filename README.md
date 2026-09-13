@@ -707,6 +707,19 @@ Sebelum deployment production:
 8. Pastikan akses file upload dilindungi sesuai kebutuhan aplikasi.
 
 ---
+# update file dari github ke cloud
+saat mau masuk ke aplikasi di hostinger:
+
+```bash
+cd ~/domains/ft.unwir.ac.id/laravel_app
+```
+
+lalu ambil file terbaru dari github:
+
+```bash
+git pull origin
+```
+
 
 # License
 
