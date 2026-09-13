@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\SesiAbsensi;
 use App\Models\Tugas;
 use App\Exports\RekapNilaiExport;
+use App\Models\PengajuanKelas;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -381,6 +382,12 @@ class PengajaranController extends Controller
             ->latest()
             ->get();
 
+        $pengajuanPending = PengajuanKelas::where('kelas_id', $kelas->id)
+            ->where('status', 'pending')
+            ->with('mahasiswa.user')
+            ->latest()
+            ->get();
+
         return view(
             'lecturer.show',
             [
@@ -389,7 +396,8 @@ class PengajaranController extends Controller
                 'materiList' => $materiList,           // dipakai untuk render daftar materi
                 'sesiAbsensiList' => $sesiAbsensiList, // <-- tambahan
                 'quizList' => $quizList,
-                'tugasList' => $tugasList // tambahkan ini
+                'tugasList' => $tugasList, // tambahkan ini
+                'pengajuanPending' => $pengajuanPending, // tambahan
             ]
         );
     }
