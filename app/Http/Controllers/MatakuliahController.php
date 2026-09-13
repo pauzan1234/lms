@@ -280,11 +280,32 @@ class MatakuliahController extends Controller
                 $query->whereHas('pengajaranDosen')
                     ->with('dosen.user'); // load dosen sekaligus data user-nya (nama)
             }])
-            ->get();
+             ->latest()
+    ->paginate(12);
 
         return view('student.matakuliah.daftar-mk', compact('mataKuliahs'));
     }
 
+    public function daftarMataKuliah(Request $request)
+{
+    $search = $request->query('search');
+
+    $mataKuliahs = Matakuliah::query()
+        ->whereHas('kelas.dosen') // hanya MK yang kelasnya sudah punya dosen
+        ->with([
+            'kelas' => function ($query) {
+                $query->whereHas('dosen'); // hanya kelas yang sudah ada dosennya
+            },
+            'kelas.dosen.user',
+        ])
+        ->when($search, function ($query, $search) {
+            $query->where('nama_mk', 'like', '%' . $search . '%');
+        })
+        ->paginate(12)
+        ->withQueryString(); // supaya query search ikut kebawa pas pindah halaman
+
+    return view('student.matakuliah.daftar-mk', compact('mataKuliahs'));
+}
 
     public function ambilMk(Kelas $kelas)
     {
