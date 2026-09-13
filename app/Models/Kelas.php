@@ -24,6 +24,17 @@ class Kelas extends Model
         );
     }
 
+    // relasi many-to-many langsung ke dosen lewat pivot pengajaran_dosen
+    public function dosen()
+    {
+        return $this->belongsToMany(
+            Lecturer::class,
+            'pengajaran_dosen',
+            'kelas_id',
+            'dosen_id'
+        );
+    }
+
     public function pengajaranDosen()
     {
         return $this->hasMany(
@@ -59,5 +70,4 @@ class Kelas extends Model
     {
         return $this->hasMany(JadwalMatakuliah::class, 'kelas_id');
     }
-
 }

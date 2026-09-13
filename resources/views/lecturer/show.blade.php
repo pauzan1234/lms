@@ -59,9 +59,16 @@ Mata Kuliah oleh
 
                 {{-- Mahasiswa --}}
                 <a href="#mahasiswa"
-                    class="rounded-lg px-4 py-2.5 text-sm font-medium text-ink/60
+                    class="relative rounded-lg px-4 py-2.5 text-sm font-medium text-ink/60
                                    transition hover:bg-paper hover:text-ink">
                     Mahasiswa
+                    @if (isset($pengajuanPending) && $pengajuanPending->count())
+                    <span
+                        class="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center
+                               rounded-full bg-amber-500 px-1 text-[10px] font-bold text-white">
+                        {{ $pengajuanPending->count() }}
+                    </span>
+                    @endif
                 </a>
                 {{-- Absensi --}}
                 <a href="#absensi"
@@ -98,7 +105,7 @@ Mata Kuliah oleh
 
 
                 {{-- Tambah Materi --}}
-                <a href="{{ route('lecturer.materi.create', $pengajaranDosen->id) }}"
+                <a href="{{ route('materi.create', $pengajaranDosen->id) }}"
                     class="inline-flex items-center justify-center gap-2 rounded-lg
                                    bg-ink px-4 py-2.5 text-sm font-semibold text-white
                                    transition hover:bg-primaryDark">
@@ -217,14 +224,14 @@ Mata Kuliah oleh
                                 class="absolute right-0 z-10 mt-1 w-40 rounded-lg border
                                                border-line bg-white py-1 shadow-lg">
 
-                                <a href="{{ route('lecturer.materi.edit', $materi->id) }}"
+                                <a href="{{ route('materi.edit', $materi->id) }}"
                                     class="block w-full px-4 py-2 text-left text-sm
                                                    text-ink/70 hover:bg-paper">
                                     Edit
                                 </a>
 
                                 <form method="POST"
-                                    action="{{ route('lecturer.materi.destroy', $materi->id) }}"
+                                    action="{{ route('materi.destroy', $materi->id) }}"
                                     onsubmit="return confirm('Yakin ingin menghapus materi ini?')">
                                     @csrf
                                     @method('DELETE')
@@ -350,7 +357,7 @@ Mata Kuliah oleh
                 </div>
 
 
-                <a href="{{ route('lecturer.tugas.create', $pengajaranDosen->id) }}"
+                <a href="{{ route('tugas.create', $pengajaranDosen->id) }}"
                     class="rounded-lg bg-ink px-4 py-2.5 text-sm font-semibold text-white
            transition hover:bg-primaryDark">
                     + Tambah Tugas
@@ -368,7 +375,7 @@ Mata Kuliah oleh
                 @forelse ($tugasList as $tugas)
                 <div class="flex items-center justify-between gap-4 p-5">
 
-                    <a href="{{ route('lecturer.tugas.show', $tugas->id) }}" class="min-w-0 flex-1">
+                    <a href="{{ route('tugas.show', $tugas->id) }}" class="min-w-0 flex-1">
                         <h3 class="truncate text-sm font-semibold text-ink hover:underline">
                             {{ $tugas->judul }}
                         </h3>
@@ -381,16 +388,16 @@ Mata Kuliah oleh
                             • {{ $tugas->jawaban_count ?? $tugas->jawaban->count() }} pengumpulan
                         </p>
                     </a>
-                    <a href="{{ route('lecturer.tugas.jawaban.index', $tugas) }}"
+                    <a href="{{ route('tugas.jawaban.index', $tugas) }}"
                         class="rounded-lg border border-line px-4 py-2.5 text-sm font-semibold text-ink transition hover:bg-paper">
                         Lihat & Koreksi Jawaban
                     </a>
                     <div class="flex shrink-0 items-center gap-2">
-                        <a href="{{ route('lecturer.tugas.show', $tugas->id) }}"
+                        <a href="{{ route('tugas.show', $tugas->id) }}"
                             class="rounded-lg border border-line px-3 py-1.5 text-xs font-semibold text-ink hover:bg-paper">
                             Lihat
                         </a>
-                        <a href="{{ route('lecturer.tugas.edit', $tugas->id) }}"
+                        <a href="{{ route('tugas.edit', $tugas->id) }}"
                             class="rounded-lg border border-line px-3 py-1.5 text-xs font-semibold text-ink hover:bg-paper">
                             Edit
                         </a>
@@ -541,6 +548,60 @@ Mata Kuliah oleh
                 </span>
             </div>
 
+            {{-- Pengajuan masuk kelas (menunggu persetujuan) --}}
+            @if (isset($pengajuanPending) && $pengajuanPending->count())
+            <div class="border-b border-line bg-amber-50/60 p-6">
+                <h3 class="text-sm font-semibold text-amber-800">
+                    {{ $pengajuanPending->count() }} mahasiswa mengajukan masuk kelas ini
+                </h3>
+
+                <div class="mt-3 divide-y divide-amber-100">
+                    @foreach ($pengajuanPending as $pengajuan)
+                    <div class="flex items-center justify-between gap-3 py-3">
+                        <div class="flex min-w-0 items-center gap-3">
+                            <div
+                                class="flex h-9 w-9 shrink-0 items-center justify-center
+                                       rounded-full bg-white text-xs font-semibold text-amber-700">
+                                {{ strtoupper(substr($pengajuan->mahasiswa->user->name ?? 'M', 0, 1)) }}
+                            </div>
+                            <div class="min-w-0">
+                                <p class="truncate text-sm font-medium text-ink">
+                                    {{ $pengajuan->mahasiswa->user->name ?? '-' }}
+                                </p>
+                                <p class="truncate text-xs text-ink/50">
+                                    NIM {{ $pengajuan->mahasiswa->nim ?? '-' }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="flex shrink-0 gap-2">
+                            <form method="POST"
+                                action="{{ route('lecturer.pengajuan.approve', $pengajuan->id) }}">
+                                @csrf
+                                <button type="submit"
+                                    class="rounded-lg bg-green-600 px-3 py-1.5 text-xs font-semibold text-white
+                                           transition hover:bg-green-700">
+                                    Setujui
+                                </button>
+                            </form>
+
+                            <form method="POST"
+                                action="{{ route('lecturer.pengajuan.reject', $pengajuan->id) }}"
+                                onsubmit="return confirm('Tolak pengajuan mahasiswa ini?')">
+                                @csrf
+                                <button type="submit"
+                                    class="rounded-lg border border-red-200 bg-white px-3 py-1.5 text-xs font-semibold
+                                           text-red-600 transition hover:bg-red-50">
+                                    Tolak
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+
             {{-- List Mahasiswa --}}
             <div class="divide-y divide-line">
 
@@ -682,7 +743,7 @@ Mata Kuliah oleh
 
 
                 {{-- Tambah Materi --}}
-                <a href="{{ route('lecturer.materi.create', $pengajaranDosen->id) }}"
+                <a href="{{ route('materi.create', $pengajaranDosen->id) }}"
                     class="flex w-full items-center gap-3 rounded-xl border border-line
                                    p-3 text-left transition hover:bg-paper">
 
@@ -710,7 +771,7 @@ Mata Kuliah oleh
 
 
                 {{-- Tambah Tugas --}}
-                <a href="{{ route('lecturer.tugas.create', $pengajaranDosen->id) }}"
+                <a href="{{ route('tugas.create', $pengajaranDosen->id) }}"
                     class="flex w-full items-center gap-3 rounded-xl border border-line
                                    p-3 text-left transition hover:bg-paper">
 
