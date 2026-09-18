@@ -191,4 +191,15 @@ class TugasController extends Controller
             ->route('lecturer.tugas.jawaban.index', $tugas)
             ->with('success', 'Koreksi berhasil disimpan.');
     }
+    private function authorizePengajaran(PengajaranDosen $pengajaranDosen): void
+    {
+        $lecturer = auth()->user()->lecturer;
+        abort_unless($lecturer && (int) $pengajaranDosen->dosen_id === (int) $lecturer->id, 403, 'Anda tidak mengampu mata kuliah ini.');
+    }
+
+    private function authorizeTugas(Tugas $tugas): void
+    {
+        $tugas->loadMissing('pengajaranDosen');
+        $this->authorizePengajaran($tugas->pengajaranDosen);
+    }
 }
