@@ -191,7 +191,7 @@ class TugasController extends Controller
         ]);
 
         return redirect()
-            ->route('lecturer.tugas.jawaban.index', $tugas)
+            ->route('tugas.jawaban.index', $tugas)
             ->with('success', 'Koreksi berhasil disimpan.');
     }
     private function authorizePengajaran(PengajaranDosen $pengajaranDosen): void
