@@ -19,7 +19,7 @@ Edit Tugas
             </h2>
 
             <form method="POST"
-                action="{{ route('lecturer.tugas.update', $tugas->id) }}"
+                action="{{ route('tugas.update', $tugas->id) }}"
                 enctype="multipart/form-data"
                 class="mt-6 space-y-5">
                 @csrf

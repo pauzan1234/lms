@@ -36,7 +36,7 @@ Koreksi Tugas
         <div class="mt-6 overflow-hidden rounded-2xl border border-line bg-white shadow-sm">
             <div class="divide-y divide-line">
                 @forelse ($jawabanList as $j)
-                <a href="{{ route('lecturer.tugas.jawaban.show', [$tugas, $j]) }}"
+                <a href="{{ route('tugas.jawaban.show', [$tugas, $j]) }}"
                     class="flex items-center justify-between gap-4 p-5 transition hover:bg-paper">
                     <div>
                         <p class="text-sm font-semibold text-ink">
